@@ -2,7 +2,10 @@ import { useEffect, useId, useRef, useState } from 'react'
 import { useScrollState } from '../hooks/useScrollContext'
 import { CHAPTERS } from '../lib/scroll'
 
-const SCROLL_LINKS = CHAPTERS.filter((c) => c.id !== 'brand').map((chapter) => ({
+const ASK = CHAPTERS.find((c) => c.id === 'ask')!
+const ASK_PROGRESS = (ASK.start + ASK.end) / 2
+
+const SCROLL_LINKS = CHAPTERS.filter((c) => c.id !== 'brand' && c.id !== 'ask').map((chapter) => ({
   id: chapter.id,
   label: chapter.headline.replace(/\.$/, ''),
   progress: (chapter.start + chapter.end) / 2,
@@ -54,6 +57,16 @@ export function BrandNav() {
     setOpen(false)
     if (path === '/') scrollToProgress(0)
     else navigate('/')
+  }
+
+  const goContact = () => {
+    setOpen(false)
+    if (path === '/') {
+      scrollToProgress(ASK_PROGRESS)
+      return
+    }
+    navigate('/')
+    window.setTimeout(() => scrollToProgress(ASK_PROGRESS), 120)
   }
 
   return (
@@ -108,6 +121,30 @@ export function BrandNav() {
         >
           Vision
         </button>
+        <button
+          type="button"
+          role="menuitem"
+          className="brand-nav__item"
+          tabIndex={open ? 0 : -1}
+          onClick={() => {
+            setOpen(false)
+            navigate('/why-now')
+          }}
+        >
+          Why now
+        </button>
+        <button
+          type="button"
+          role="menuitem"
+          className="brand-nav__item"
+          tabIndex={open ? 0 : -1}
+          onClick={() => {
+            setOpen(false)
+            navigate('/about')
+          }}
+        >
+          About
+        </button>
         {path === '/' &&
           SCROLL_LINKS.map((item) => (
             <button
@@ -124,14 +161,15 @@ export function BrandNav() {
               {item.label}
             </button>
           ))}
-        <a
-          className="brand-nav__item brand-nav__item--link"
+        <button
+          type="button"
           role="menuitem"
-          href="mailto:hello@mxsquid.co"
+          className="brand-nav__item brand-nav__item--link"
           tabIndex={open ? 0 : -1}
+          onClick={goContact}
         >
           Contact
-        </a>
+        </button>
       </div>
     </nav>
   )

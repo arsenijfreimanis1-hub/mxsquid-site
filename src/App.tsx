@@ -7,6 +7,7 @@ import { Experience } from './scene/Experience'
 import { Chapters } from './overlays/Chapters'
 import { BrandNav } from './overlays/BrandNav'
 import { VisionPage } from './overlays/VisionPage'
+import { WhyNowPage } from './overlays/WhyNowPage'
 import './index.css'
 
 function CanvasScene() {
@@ -14,7 +15,7 @@ function CanvasScene() {
     <Canvas
       shadows
       dpr={[1, 1.75]}
-      camera={{ fov: 40, near: 0.1, far: 80, position: [0.15, 2.35, 6.4] }}
+      camera={{ fov: 44, near: 0.1, far: 80, position: [-1.8, 5.2, 12.5] }}
       gl={{ antialias: true, powerPreference: 'high-performance' }}
     >
       <Suspense fallback={null}>
@@ -47,14 +48,15 @@ export default function App() {
           <CanvasScene />
         </div>
         <BrandNav />
-        {onHome ? (
+        {path === '/' && (
           <>
             <Chapters />
             <div className="scroll-track" aria-hidden="true" />
           </>
-        ) : (
-          <VisionPage onHome={() => navigate('/')} />
         )}
+        {path === '/vision' && <VisionPage onHome={() => navigate('/')} />}
+        {path === '/why-now' && <WhyNowPage onHome={() => navigate('/')} variant="why-now" />}
+        {path === '/about' && <WhyNowPage onHome={() => navigate('/')} variant="about" />}
       </div>
     </ScrollContext.Provider>
   )

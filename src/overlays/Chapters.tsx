@@ -3,7 +3,7 @@ import { CHAPTERS, chapterOpacity, mapRange } from '../lib/scroll'
 
 export function Chapters() {
   const { progress, reducedMotion, navigate } = useScrollState()
-  const heroFade = mapRange(progress, 0, 0.14, 1, 0)
+  const heroFade = mapRange(progress, 0, 0.16, 1, 0)
 
   if (reducedMotion) {
     return (
@@ -17,6 +17,9 @@ export function Chapters() {
               <p className="chapter__body">{chapter.body}</p>
             </section>
           ))}
+          <button type="button" className="chapter__cta chapter__cta--button" onClick={() => navigate('/why-now')}>
+            Why now
+          </button>
           <button type="button" className="chapter__cta chapter__cta--button" onClick={() => navigate('/vision')}>
             Read the vision
           </button>
@@ -65,6 +68,13 @@ export function Chapters() {
             <p className="chapter__body">{chapter.body}</p>
             {chapter.id === 'ask' && (
               <>
+                <button
+                  type="button"
+                  className="chapter__cta chapter__cta--button"
+                  onClick={() => navigate('/why-now')}
+                >
+                  Why now
+                </button>
                 <button
                   type="button"
                   className="chapter__cta chapter__cta--button"

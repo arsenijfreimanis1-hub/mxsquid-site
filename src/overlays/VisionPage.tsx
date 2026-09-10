@@ -11,7 +11,7 @@ export function VisionPage({ onHome }: VisionPageProps) {
         <h1 className="page__title">Build the first hyper-realistic motocross simulator.</h1>
         <p className="page__lede">
           Not a game pad. Not a novelty. A full-body machine that feels like dirt, throttle, and
-          consequence — built for venues, athletes, and anyone who wants the real thing without
+          consequence - built for venues, athletes, and anyone who wants the real thing without
           the track.
         </p>
 
@@ -28,7 +28,7 @@ export function VisionPage({ onHome }: VisionPageProps) {
           <h2 className="vision-block__title">Where it stands</h2>
           <p className="vision-block__body">
             The machine is still under wraps. No manufacturer line. No investors. No finished unit
-            shipping. The cover is the teaser — the intention underneath is the product.
+            shipping. The cover is the teaser - the intention underneath is the product.
           </p>
         </section>
 

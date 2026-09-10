@@ -19,46 +19,46 @@ export const CHAPTERS: Chapter[] = [
   {
     id: 'brand',
     start: 0,
-    end: 0.16,
+    end: 0.18,
     kicker: 'MXsquid',
     headline: 'Under wraps.',
-    body: 'The first hyper-realistic motocross simulator — still being built.',
+    body: 'First hyper-realistic motocross simulator. Still being built.',
   },
   {
     id: 'empty',
-    start: 0.16,
+    start: 0.18,
     end: 0.34,
     kicker: 'Where we are',
-    headline: 'Not manufactured yet.',
-    body: 'No finished machine. Only the cover — and the intention underneath.',
+    headline: 'Empty floor.',
+    body: 'Nothing on the line yet. Just space waiting for a build.',
   },
   {
     id: 'manufacturers',
     start: 0.34,
     end: 0.5,
-    kicker: 'Today',
-    headline: 'No manufacturers.',
-    body: 'No partners on the line. Nothing in production.',
+    kicker: 'Partners',
+    headline: 'No factory yet.',
+    body: 'When a partner signs, this void becomes their floor.',
   },
   {
     id: 'investors',
     start: 0.5,
     end: 0.66,
-    kicker: 'Today',
-    headline: 'No investors.',
-    body: 'No round. No board. Just the vision — and the ask.',
+    kicker: 'Capital',
+    headline: 'No capital yet.',
+    body: 'Vision first. Round later.',
   },
   {
     id: 'approach',
     start: 0.66,
-    end: 0.84,
-    kicker: 'The machine',
-    headline: 'Still covered.',
-    body: 'Hidden until it’s ready to be built for real.',
+    end: 0.82,
+    kicker: 'The bay',
+    headline: 'Build bay covered.',
+    body: 'The room stays sealed until it is ready to show.',
   },
   {
     id: 'ask',
-    start: 0.84,
+    start: 0.82,
     end: 1,
     kicker: 'Join the build',
     headline: 'Help make it real.',
@@ -75,11 +75,24 @@ export function getChapter(progress: number): Chapter {
 }
 
 export function chapterOpacity(progress: number, chapter: Chapter): number {
+  const first = CHAPTERS[0]
+  const last = CHAPTERS[CHAPTERS.length - 1]
   const span = chapter.end - chapter.start
   const local = (progress - chapter.start) / span
   const fade = Math.min(span * 0.4, 0.1)
-  const enter = Math.min(1, local / fade)
-  const exit = Math.min(1, (chapter.end - progress) / fade)
+
+  // First beat stays fully visible at progress 0 (no fade-in from zero).
+  const enter = chapter.id === first.id ? 1 : Math.min(1, local / fade)
+  // Last beat stays fully visible at progress 1 (no fade-out to zero).
+  const exit = chapter.id === last.id ? 1 : Math.min(1, (chapter.end - progress) / fade)
+
+  if (progress < chapter.start - fade || progress > chapter.end + fade) return 0
+  if (chapter.id === first.id && progress < chapter.end) {
+    return Math.min(1, exit)
+  }
+  if (chapter.id === last.id && progress >= chapter.start) {
+    return Math.min(1, enter)
+  }
   return Math.min(enter, exit)
 }
 

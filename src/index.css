@@ -288,7 +288,7 @@ body:has(.app--page) {
 .chapter--brand {
   left: 50%;
   bottom: auto;
-  top: 46%;
+  top: 42%;
   transform: translate(-50%, -50%);
   text-align: center;
   max-width: min(30rem, 90vw);
@@ -306,9 +306,10 @@ body:has(.app--page) {
 .chapter--ask {
   left: 50%;
   bottom: auto;
-  top: 50%;
+  top: 38%;
   transform: translate(-50%, -50%);
   text-align: center;
+  max-width: min(32rem, 90vw);
 }
 
 .chapter--ask .chapter__body {

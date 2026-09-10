@@ -142,7 +142,7 @@ function BayMark({ position }: { position: [number, number, number] }) {
   return (
     <group position={position}>
       <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, 0.01, 0]}>
-        <ringGeometry args={[2.35, 2.48, 4]} />
+        <ringGeometry args={[3.15, 3.3, 4]} />
         <meshStandardMaterial
           color="#0a0806"
           emissive="#e85d04"
@@ -153,7 +153,7 @@ function BayMark({ position }: { position: [number, number, number] }) {
         />
       </mesh>
       <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, 0.012, 0]}>
-        <ringGeometry args={[2.55, 2.6, 4]} />
+        <ringGeometry args={[3.4, 3.48, 4]} />
         <meshStandardMaterial
           color="#041418"
           emissive="#2ec4d6"
@@ -176,7 +176,7 @@ export function Factory() {
       <GridWall position={[0, 8, 24]} rotation={[0, Math.PI, 0]} />
       <GridWall position={[-28, 8, 0]} rotation={[0, Math.PI / 2, 0]} />
       <GridWall position={[28, 8, 0]} rotation={[0, -Math.PI / 2, 0]} />
-      <BayMark position={[0, 0, -0.2]} />
+      <BayMark position={[0, 0, -0.35]} />
     </group>
   )
 }
