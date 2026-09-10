@@ -22,7 +22,7 @@ export const CHAPTERS: Chapter[] = [
     end: 0.18,
     kicker: 'MXsquid',
     headline: 'Under wraps.',
-    body: 'First hyper-realistic motocross simulator. Still being built.',
+    body: 'That covered bay is the first hyper-realistic motocross simulator - still being built.',
   },
   {
     id: 'empty',
@@ -54,7 +54,7 @@ export const CHAPTERS: Chapter[] = [
     end: 0.82,
     kicker: 'Coming soon',
     headline: 'Stay tuned for the big reveal.',
-    body: 'The cover comes off when the build is ready to show.',
+    body: 'The simulator stays under this cover until it is ready to show.',
   },
   {
     id: 'ask',
