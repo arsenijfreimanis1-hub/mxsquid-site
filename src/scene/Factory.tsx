@@ -138,28 +138,98 @@ function GridWall({
 function BayMark({ position }: { position: [number, number, number] }) {
   const { progress } = useScrollState()
   const glow = mapRange(progress, 0.35, 0.8, 0.25, 1.2)
+  const w = 5.2
+  const d = 4.0
+  const t = 0.08
 
   return (
     <group position={position}>
-      <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, 0.01, 0]}>
-        <ringGeometry args={[3.15, 3.3, 4]} />
+      {/* Continuous rectangular frame - corners meet */}
+      <mesh position={[0, 0.012, -d / 2]} rotation={[-Math.PI / 2, 0, 0]}>
+        <planeGeometry args={[w, t]} />
         <meshStandardMaterial
           color="#0a0806"
           emissive="#e85d04"
           emissiveIntensity={glow}
           transparent
-          opacity={0.9}
+          opacity={0.95}
           toneMapped={false}
         />
       </mesh>
-      <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, 0.012, 0]}>
-        <ringGeometry args={[3.4, 3.48, 4]} />
+      <mesh position={[0, 0.012, d / 2]} rotation={[-Math.PI / 2, 0, 0]}>
+        <planeGeometry args={[w, t]} />
+        <meshStandardMaterial
+          color="#0a0806"
+          emissive="#e85d04"
+          emissiveIntensity={glow}
+          transparent
+          opacity={0.95}
+          toneMapped={false}
+        />
+      </mesh>
+      <mesh position={[-w / 2, 0.012, 0]} rotation={[-Math.PI / 2, 0, Math.PI / 2]}>
+        <planeGeometry args={[d, t]} />
+        <meshStandardMaterial
+          color="#0a0806"
+          emissive="#e85d04"
+          emissiveIntensity={glow}
+          transparent
+          opacity={0.95}
+          toneMapped={false}
+        />
+      </mesh>
+      <mesh position={[w / 2, 0.012, 0]} rotation={[-Math.PI / 2, 0, Math.PI / 2]}>
+        <planeGeometry args={[d, t]} />
+        <meshStandardMaterial
+          color="#0a0806"
+          emissive="#e85d04"
+          emissiveIntensity={glow}
+          transparent
+          opacity={0.95}
+          toneMapped={false}
+        />
+      </mesh>
+      <mesh position={[0, 0.014, -d / 2 - 0.12]} rotation={[-Math.PI / 2, 0, 0]}>
+        <planeGeometry args={[w + 0.24, 0.035]} />
         <meshStandardMaterial
           color="#041418"
           emissive="#2ec4d6"
           emissiveIntensity={glow * 0.55}
           transparent
-          opacity={0.75}
+          opacity={0.8}
+          toneMapped={false}
+        />
+      </mesh>
+      <mesh position={[0, 0.014, d / 2 + 0.12]} rotation={[-Math.PI / 2, 0, 0]}>
+        <planeGeometry args={[w + 0.24, 0.035]} />
+        <meshStandardMaterial
+          color="#041418"
+          emissive="#2ec4d6"
+          emissiveIntensity={glow * 0.55}
+          transparent
+          opacity={0.8}
+          toneMapped={false}
+        />
+      </mesh>
+      <mesh position={[-w / 2 - 0.12, 0.014, 0]} rotation={[-Math.PI / 2, 0, Math.PI / 2]}>
+        <planeGeometry args={[d + 0.24, 0.035]} />
+        <meshStandardMaterial
+          color="#041418"
+          emissive="#2ec4d6"
+          emissiveIntensity={glow * 0.55}
+          transparent
+          opacity={0.8}
+          toneMapped={false}
+        />
+      </mesh>
+      <mesh position={[w / 2 + 0.12, 0.014, 0]} rotation={[-Math.PI / 2, 0, Math.PI / 2]}>
+        <planeGeometry args={[d + 0.24, 0.035]} />
+        <meshStandardMaterial
+          color="#041418"
+          emissive="#2ec4d6"
+          emissiveIntensity={glow * 0.55}
+          transparent
+          opacity={0.8}
           toneMapped={false}
         />
       </mesh>

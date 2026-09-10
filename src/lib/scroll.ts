@@ -52,9 +52,9 @@ export const CHAPTERS: Chapter[] = [
     id: 'approach',
     start: 0.66,
     end: 0.82,
-    kicker: 'The bay',
-    headline: 'Build bay covered.',
-    body: 'The room stays sealed until it is ready to show.',
+    kicker: 'Coming soon',
+    headline: 'Stay tuned for the big reveal.',
+    body: 'The cover comes off when the build is ready to show.',
   },
   {
     id: 'ask',

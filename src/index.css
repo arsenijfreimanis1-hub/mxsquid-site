@@ -102,30 +102,39 @@ body:has(.app--page) {
   align-items: center;
   gap: 0.65rem;
   margin: 0;
-  padding: 0.35rem 0.35rem 0.35rem 0.3rem;
-  border: 0;
+  padding: 0.4rem 0.55rem 0.4rem 0.35rem;
+  border: 1px solid transparent;
+  border-radius: 2px;
   background: transparent;
   color: rgba(238, 246, 248, 0.92);
   cursor: pointer;
   font: inherit;
+  transition: border-color 0.18s ease, background 0.18s ease;
+}
+
+.brand-nav--open .brand-nav__trigger,
+.brand-nav:hover .brand-nav__trigger {
+  border-color: rgba(46, 196, 214, 0.2);
+  background: rgba(8, 12, 18, 0.55);
 }
 
 .brand-nav__caret {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 1.6rem;
-  height: 1.6rem;
+  width: 1.45rem;
+  height: 1.45rem;
   margin: 0;
   padding: 0;
-  border: 0;
-  background: transparent;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 2px;
+  background: rgba(8, 12, 18, 0.45);
   cursor: pointer;
 }
 
 .brand-nav__caret span {
-  width: 0.45rem;
-  height: 0.45rem;
+  width: 0.42rem;
+  height: 0.42rem;
   border-right: 1.5px solid rgba(238, 246, 248, 0.55);
   border-bottom: 1.5px solid rgba(238, 246, 248, 0.55);
   transform: translateY(-1px) rotate(45deg);
@@ -161,18 +170,22 @@ body:has(.app--page) {
 
 .brand-nav__menu {
   position: absolute;
-  top: calc(100% + 0.35rem);
+  top: calc(100% + 0.45rem);
   left: 0;
-  min-width: 13.5rem;
-  padding: 0.4rem;
-  border: 1px solid rgba(46, 196, 214, 0.22);
-  background: linear-gradient(165deg, rgba(8, 12, 18, 0.96), rgba(5, 6, 10, 0.92));
-  box-shadow: 0 18px 40px rgba(0, 0, 0, 0.45);
-  backdrop-filter: blur(12px);
+  min-width: 15.5rem;
+  padding: 0.55rem;
+  border: 1px solid rgba(46, 196, 214, 0.28);
+  border-radius: 4px;
+  background:
+    linear-gradient(180deg, rgba(14, 20, 28, 0.98), rgba(6, 8, 12, 0.97));
+  box-shadow:
+    0 0 0 1px rgba(0, 0, 0, 0.35),
+    0 22px 50px rgba(0, 0, 0, 0.55);
+  backdrop-filter: blur(16px);
   opacity: 0;
   visibility: hidden;
   pointer-events: none;
-  transform: translateY(-6px);
+  transform: translateY(-8px);
   transition:
     opacity 0.18s ease,
     transform 0.18s ease,
@@ -188,41 +201,57 @@ body:has(.app--page) {
   transform: translateY(0);
 }
 
+.brand-nav__label {
+  margin: 0.15rem 0.55rem 0.35rem;
+  font-size: 0.62rem;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: rgba(138, 154, 163, 0.85);
+}
+
+.brand-nav__divider {
+  height: 1px;
+  margin: 0.4rem 0.35rem;
+  background: linear-gradient(90deg, transparent, rgba(46, 196, 214, 0.25), transparent);
+}
+
 .brand-nav__item {
   display: block;
   width: 100%;
   margin: 0;
-  padding: 0.55rem 0.7rem;
+  padding: 0.62rem 0.75rem;
   border: 0;
+  border-radius: 3px;
   background: transparent;
-  color: rgba(238, 246, 248, 0.82);
+  color: rgba(238, 246, 248, 0.9);
   text-align: left;
   text-decoration: none;
   font-family: var(--font-body);
-  font-size: 0.78rem;
+  font-size: 0.8rem;
   font-weight: 400;
-  letter-spacing: 0.08em;
+  letter-spacing: 0.1em;
   text-transform: uppercase;
   cursor: pointer;
-  transition: color 0.15s ease, background 0.15s ease;
+  transition: color 0.15s ease, background 0.15s ease, padding-left 0.15s ease;
 }
 
 .brand-nav__item:hover,
 .brand-nav__item:focus-visible {
-  color: var(--cyan);
-  background: rgba(46, 196, 214, 0.08);
+  color: #b8f0f8;
+  background: rgba(46, 196, 214, 0.12);
+  padding-left: 0.9rem;
   outline: none;
 }
 
 .brand-nav__item--link {
-  margin-top: 0.2rem;
-  border-top: 1px solid rgba(255, 255, 255, 0.06);
-  color: rgba(232, 93, 4, 0.9);
+  margin-top: 0.15rem;
+  color: rgba(255, 170, 120, 0.95);
 }
 
 .brand-nav__item--link:hover,
 .brand-nav__item--link:focus-visible {
-  color: var(--accent);
+  color: #ffb087;
+  background: rgba(232, 93, 4, 0.12);
 }
 
 .hero-logo {
@@ -306,14 +335,30 @@ body:has(.app--page) {
 .chapter--ask {
   left: 50%;
   bottom: auto;
-  top: 38%;
+  top: 36%;
   transform: translate(-50%, -50%);
   text-align: center;
-  max-width: min(32rem, 90vw);
+  max-width: min(34rem, 92vw);
+  padding: 1.5rem 1.75rem 1.65rem;
+  border: 1px solid rgba(46, 196, 214, 0.18);
+  background: linear-gradient(180deg, rgba(5, 8, 12, 0.72), rgba(5, 6, 10, 0.88));
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.45);
+  backdrop-filter: blur(10px);
 }
 
 .chapter--ask .chapter__body {
   margin-inline: auto;
+  max-width: 36ch;
+  color: rgba(220, 232, 238, 0.92);
+  text-shadow: 0 1px 12px rgba(0, 0, 0, 0.65);
+}
+
+.chapter--ask .chapter__headline {
+  text-shadow: 0 2px 24px rgba(0, 0, 0, 0.55);
+}
+
+.chapter--ask .chapter__kicker {
+  color: #7de8f5;
 }
 
 .chapter__kicker {

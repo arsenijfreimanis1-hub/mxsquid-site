@@ -5,9 +5,16 @@ import { CHAPTERS } from '../lib/scroll'
 const ASK = CHAPTERS.find((c) => c.id === 'ask')!
 const ASK_PROGRESS = (ASK.start + ASK.end) / 2
 
+const SCROLL_LABELS: Record<string, string> = {
+  empty: 'Empty floor',
+  manufacturers: 'No factory yet',
+  investors: 'No capital yet',
+  approach: 'Big reveal',
+}
+
 const SCROLL_LINKS = CHAPTERS.filter((c) => c.id !== 'brand' && c.id !== 'ask').map((chapter) => ({
   id: chapter.id,
-  label: chapter.headline.replace(/\.$/, ''),
+  label: SCROLL_LABELS[chapter.id] ?? chapter.headline.replace(/\.$/, ''),
   progress: (chapter.start + chapter.end) / 2,
 }))
 
@@ -100,6 +107,7 @@ export function BrandNav() {
       </div>
 
       <div id={menuId} className="brand-nav__menu" role="menu" aria-hidden={!open}>
+        <p className="brand-nav__label">Navigate</p>
         <button
           type="button"
           role="menuitem"
@@ -145,22 +153,30 @@ export function BrandNav() {
         >
           About
         </button>
-        {path === '/' &&
-          SCROLL_LINKS.map((item) => (
-            <button
-              key={item.id}
-              type="button"
-              role="menuitem"
-              className="brand-nav__item"
-              tabIndex={open ? 0 : -1}
-              onClick={() => {
-                setOpen(false)
-                scrollToProgress(item.progress)
-              }}
-            >
-              {item.label}
-            </button>
-          ))}
+
+        {path === '/' && (
+          <>
+            <div className="brand-nav__divider" />
+            <p className="brand-nav__label">Story</p>
+            {SCROLL_LINKS.map((item) => (
+              <button
+                key={item.id}
+                type="button"
+                role="menuitem"
+                className="brand-nav__item"
+                tabIndex={open ? 0 : -1}
+                onClick={() => {
+                  setOpen(false)
+                  scrollToProgress(item.progress)
+                }}
+              >
+                {item.label}
+              </button>
+            ))}
+          </>
+        )}
+
+        <div className="brand-nav__divider" />
         <button
           type="button"
           role="menuitem"
