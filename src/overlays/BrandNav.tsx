@@ -1,9 +1,8 @@
 import { useEffect, useId, useRef, useState } from 'react'
 import { useScrollState } from '../hooks/useScrollContext'
-import { CHAPTERS } from '../lib/scroll'
+import { CHAPTERS, CHAPTER_SNAPS } from '../lib/scroll'
 
-const ASK = CHAPTERS.find((c) => c.id === 'ask')!
-const ASK_PROGRESS = (ASK.start + ASK.end) / 2
+const ASK_PROGRESS = CHAPTER_SNAPS[CHAPTER_SNAPS.length - 1]
 
 const SCROLL_LABELS: Record<string, string> = {
   empty: 'Empty floor',
@@ -12,10 +11,11 @@ const SCROLL_LABELS: Record<string, string> = {
   approach: 'Big reveal',
 }
 
-const SCROLL_LINKS = CHAPTERS.filter((c) => c.id !== 'brand' && c.id !== 'ask').map((chapter) => ({
+const SCROLL_LINKS = CHAPTERS.filter((c) => c.id !== 'brand' && c.id !== 'ask').map((chapter, index) => ({
   id: chapter.id,
   label: SCROLL_LABELS[chapter.id] ?? chapter.headline.replace(/\.$/, ''),
-  progress: (chapter.start + chapter.end) / 2,
+  // +1 because brand is snaps[0]
+  progress: CHAPTER_SNAPS[index + 1],
 }))
 
 export function BrandNav() {

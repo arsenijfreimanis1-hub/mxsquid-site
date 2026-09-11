@@ -66,6 +66,26 @@ export const CHAPTERS: Chapter[] = [
   },
 ]
 
+/** Discrete scroll stops - one per story beat. */
+export const CHAPTER_SNAPS: number[] = CHAPTERS.map((chapter, index) => {
+  if (index === 0) return 0
+  if (index === CHAPTERS.length - 1) return 1
+  return (chapter.start + chapter.end) / 2
+})
+
+export function nearestSnapIndex(progress: number): number {
+  let best = 0
+  let bestDist = Infinity
+  CHAPTER_SNAPS.forEach((snap, index) => {
+    const dist = Math.abs(snap - progress)
+    if (dist < bestDist) {
+      bestDist = dist
+      best = index
+    }
+  })
+  return best
+}
+
 export function getChapter(progress: number): Chapter {
   const clamped = Math.min(1, Math.max(0, progress))
   return (
