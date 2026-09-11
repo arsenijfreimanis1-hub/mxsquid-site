@@ -15,7 +15,7 @@ function CanvasScene() {
     <Canvas
       shadows
       dpr={[1, 1.75]}
-      camera={{ fov: 42, near: 0.1, far: 90, position: [1.2, 8.8, 11.5] }}
+      camera={{ fov: 44, near: 0.1, far: 120, position: [0.2, 3.8, 3.2] }}
       gl={{ antialias: true, powerPreference: 'high-performance' }}
     >
       <Suspense fallback={null}>
