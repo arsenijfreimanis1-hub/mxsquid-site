@@ -25,6 +25,9 @@ export function Chapters() {
             <button type="button" className="chapter__cta chapter__cta--button" onClick={() => navigate('/vision')}>
               Read the vision
             </button>
+            <button type="button" className="chapter__cta chapter__cta--button" onClick={() => navigate('/force-studio')}>
+              Force Studio
+            </button>
             <a className="chapter__cta" href="mailto:hello@mxsquid.co">
               hello@mxsquid.co
             </a>
@@ -87,6 +90,13 @@ export function Chapters() {
                     onClick={() => navigate('/vision')}
                   >
                     Read the vision
+                  </button>
+                  <button
+                    type="button"
+                    className="chapter__cta chapter__cta--button"
+                    onClick={() => navigate('/force-studio')}
+                  >
+                    Force Studio
                   </button>
                   <a className="chapter__cta" href="mailto:hello@mxsquid.co">
                     hello@mxsquid.co
