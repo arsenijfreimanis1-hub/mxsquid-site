@@ -153,6 +153,18 @@ export function BrandNav() {
         >
           About
         </button>
+        <button
+          type="button"
+          role="menuitem"
+          className="brand-nav__item"
+          tabIndex={open ? 0 : -1}
+          onClick={() => {
+            setOpen(false)
+            navigate('/force-studio')
+          }}
+        >
+          Force Studio
+        </button>
 
         {path === '/' && (
           <>

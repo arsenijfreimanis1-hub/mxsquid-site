@@ -8,6 +8,7 @@ import { Chapters } from './overlays/Chapters'
 import { BrandNav } from './overlays/BrandNav'
 import { VisionPage } from './overlays/VisionPage'
 import { WhyNowPage } from './overlays/WhyNowPage'
+import { ForceStudioPage } from './overlays/ForceStudioPage'
 import './index.css'
 
 function CanvasScene() {
@@ -57,6 +58,7 @@ export default function App() {
         {path === '/vision' && <VisionPage onHome={() => navigate('/')} />}
         {path === '/why-now' && <WhyNowPage onHome={() => navigate('/')} variant="why-now" />}
         {path === '/about' && <WhyNowPage onHome={() => navigate('/')} variant="about" />}
+        {path === '/force-studio' && <ForceStudioPage onHome={() => navigate('/')} />}
       </div>
     </ScrollContext.Provider>
   )

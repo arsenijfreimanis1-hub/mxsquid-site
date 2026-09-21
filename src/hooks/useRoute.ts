@@ -1,12 +1,13 @@
 import { useCallback, useEffect, useState } from 'react'
 
-export type RoutePath = '/' | '/vision' | '/why-now' | '/about'
+export type RoutePath = '/' | '/vision' | '/why-now' | '/about' | '/force-studio'
 
 function normalizePath(pathname: string): RoutePath {
   const clean = pathname.replace(/\/+$/, '') || '/'
   if (clean === '/vision') return '/vision'
   if (clean === '/why-now') return '/why-now'
   if (clean === '/about') return '/about'
+  if (clean === '/force-studio') return '/force-studio'
   return '/'
 }
 
