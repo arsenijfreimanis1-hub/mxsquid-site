@@ -4,6 +4,9 @@ import { ContactShadows } from '@react-three/drei'
 import { useFrame } from '@react-three/fiber'
 import { useScrollState } from '../hooks/useScrollContext'
 import { mapRange } from '../lib/scroll'
+import { useClothTextures, useSteelTextures } from './textures'
+
+const STEEL_NORMAL = new THREE.Vector2(0.22, 0.22)
 
 /** Sealed cloth volume on exterior scaffolding. Corners stay connected. */
 const BAY = { w: 4.5, d: 3.3, h: 2.2 }
@@ -74,9 +77,9 @@ const clothVertex = /* glsl */ `
     );
     float free = floorPin * topPin * cornerPin * 0.85;
 
-    float windPhase = uTime * 2.0 - position.x * 1.15 + position.z * 0.45;
-    float wave = sin(windPhase) * 0.022 + sin(windPhase * 1.55 + position.z * 1.8) * 0.012;
-    float flutter = sin(uTime * 4.4 + position.y * 6.5) * 0.006;
+    float windPhase = uTime * 0.85 - position.x * 0.72 + position.z * 0.32;
+    float wave = sin(windPhase) * 0.016 + sin(windPhase * 0.62 + position.z * 0.9) * 0.008;
+    float flutter = sin(uTime * 1.35 + position.y * 2.4) * 0.003;
 
     pos.z += (wave + flutter) * uWind * free;
     pos.x += cos(windPhase) * 0.005 * uWind * free;
@@ -91,6 +94,8 @@ const clothVertex = /* glsl */ `
 
 const clothFragment = /* glsl */ `
   uniform float uKey;
+  uniform sampler2D uNormalMap;
+  uniform sampler2D uRoughMap;
   varying vec3 vNormal;
   varying vec3 vWorldPos;
   varying vec2 vUv;
@@ -98,24 +103,43 @@ const clothFragment = /* glsl */ `
   void main() {
     vec3 n = normalize(vNormal);
     if (!gl_FrontFacing) n = -n;
+
+    vec2 uv = vUv * vec2(4.0, 2.6);
+    vec3 mapN = texture2D(uNormalMap, uv).xyz * 2.0 - 1.0;
+    mapN.xy *= 1.45;
+    float rough = texture2D(uRoughMap, uv).r;
+
+    vec3 dp1 = dFdx(vWorldPos);
+    vec3 dp2 = dFdy(vWorldPos);
+    vec2 duv1 = dFdx(vUv);
+    vec2 duv2 = dFdy(vUv);
+    vec3 t = dp1 * duv2.y - dp2 * duv1.y;
+    vec3 b = dp2 * duv1.x - dp1 * duv2.x;
+    float handed = sign(dot(n, cross(t, b)));
+    t = normalize(t);
+    b = normalize(b) * handed;
+    n = normalize(mat3(t, b, n) * mapN);
+
     vec3 V = normalize(cameraPosition - vWorldPos);
-    vec3 L = normalize(vec3(0.55, 0.85, 0.2));
-    vec3 L2 = normalize(vec3(-0.6, 0.4, 0.3));
+    vec3 L = normalize(vec3(0.55, 0.85, 0.25));
+    vec3 L2 = normalize(vec3(-0.45, 0.35, 0.55));
+    vec3 H = normalize(L + V);
 
-    float diff = pow(dot(n, L) * 0.5 + 0.5, 1.7);
-    float fill = pow(dot(n, L2) * 0.5 + 0.5, 2.0);
-    float rim = pow(1.0 - max(dot(n, V), 0.0), 2.6);
-    float velvet = pow(1.0 - max(dot(n, V), 0.0), 3.8);
-    float weave = sin(vUv.x * 80.0) * sin(vUv.y * 60.0) * 0.012;
-    float key = mix(0.7, 1.15, clamp(uKey, 0.0, 1.0));
+    float diff = pow(dot(n, L) * 0.5 + 0.5, 1.35);
+    float fill = pow(dot(n, L2) * 0.5 + 0.5, 1.55);
+    float rim = pow(1.0 - max(dot(n, V), 0.0), 2.4);
+    float sheen = pow(1.0 - max(dot(n, V), 0.0), 4.2);
+    float spec = pow(max(dot(n, H), 0.0), mix(42.0, 12.0, rough));
+    float key = mix(0.72, 1.12, clamp(uKey, 0.0, 1.0));
 
-    vec3 col = vec3(0.045, 0.046, 0.05);
-    col += vec3(0.1, 0.1, 0.11) * diff * key;
-    col += vec3(0.045, 0.05, 0.055) * fill;
-    col += vec3(0.16, 0.16, 0.18) * rim * 0.4 * key;
-    col += vec3(0.07, 0.065, 0.06) * velvet * 0.3;
-    col += weave;
-    col *= mix(0.65, 1.0, smoothstep(0.0, 1.0, vWorldPos.y));
+    vec3 col = vec3(0.028, 0.029, 0.032);
+    col += vec3(0.085, 0.088, 0.095) * diff * key;
+    col += vec3(0.032, 0.036, 0.04) * fill;
+    col += vec3(0.13, 0.135, 0.15) * rim * 0.26 * key;
+    col += vec3(0.07, 0.065, 0.06) * sheen * 0.2;
+    col += vec3(0.15, 0.15, 0.16) * spec * (1.0 - rough) * 0.4 * key;
+    col *= mix(0.78, 1.14, rough);
+    col *= mix(0.74, 1.0, smoothstep(0.0, 1.2, vWorldPos.y));
 
     gl_FragColor = vec4(col, 1.0);
   }
@@ -133,7 +157,7 @@ function BlackoutVolume() {
   )
 }
 
-function Scaffolding() {
+function Scaffolding({ material }: { material: THREE.Material }) {
   const { w, d, h } = BAY
   // Outside the cloth so poles actually read as holding the cover.
   const hx = w / 2 + 0.22
@@ -145,59 +169,45 @@ function Scaffolding() {
     [-hx, hz],
     [hx, hz],
   ]
-  const steel = { color: '#5a616c', metalness: 0.88, roughness: 0.28 }
 
   return (
     <group>
       {poles.map(([x, z], i) => (
         <group key={i}>
-          <mesh position={[x, poleH * 0.5, z]} castShadow>
-            <cylinderGeometry args={[0.055, 0.06, poleH, 14]} />
-            <meshStandardMaterial {...steel} />
+          <mesh position={[x, poleH * 0.5, z]} material={material} castShadow>
+            <cylinderGeometry args={[0.055, 0.06, poleH, 24]} />
           </mesh>
-          <mesh position={[x, poleH + 0.03, z]} castShadow>
-            <cylinderGeometry args={[0.085, 0.085, 0.06, 12]} />
-            <meshStandardMaterial color="#3d4450" metalness={0.85} roughness={0.3} />
+          <mesh position={[x, poleH + 0.03, z]} material={material} castShadow>
+            <cylinderGeometry args={[0.085, 0.085, 0.06, 20]} />
           </mesh>
-          <mesh position={[x, 0.04, z]} castShadow>
-            <cylinderGeometry args={[0.12, 0.14, 0.08, 12]} />
-            <meshStandardMaterial color="#22262e" metalness={0.75} roughness={0.4} />
+          <mesh position={[x, 0.04, z]} material={material} castShadow>
+            <cylinderGeometry args={[0.12, 0.14, 0.08, 20]} />
           </mesh>
         </group>
       ))}
-      {/* Top frame resting on poles, cloth sits under / against it */}
-      <mesh position={[0, h + 0.04, -hz]} castShadow>
+      <mesh position={[0, h + 0.04, -hz]} material={material} castShadow>
         <boxGeometry args={[hx * 2 + 0.06, 0.06, 0.06]} />
-        <meshStandardMaterial {...steel} />
       </mesh>
-      <mesh position={[0, h + 0.04, hz]} castShadow>
+      <mesh position={[0, h + 0.04, hz]} material={material} castShadow>
         <boxGeometry args={[hx * 2 + 0.06, 0.06, 0.06]} />
-        <meshStandardMaterial {...steel} />
       </mesh>
-      <mesh position={[-hx, h + 0.04, 0]} castShadow>
+      <mesh position={[-hx, h + 0.04, 0]} material={material} castShadow>
         <boxGeometry args={[0.06, 0.06, hz * 2 + 0.06]} />
-        <meshStandardMaterial {...steel} />
       </mesh>
-      <mesh position={[hx, h + 0.04, 0]} castShadow>
+      <mesh position={[hx, h + 0.04, 0]} material={material} castShadow>
         <boxGeometry args={[0.06, 0.06, hz * 2 + 0.06]} />
-        <meshStandardMaterial {...steel} />
       </mesh>
-      {/* Mid rails */}
-      <mesh position={[0, h * 0.52, -hz]} castShadow>
+      <mesh position={[0, h * 0.52, -hz]} material={material} castShadow>
         <boxGeometry args={[hx * 2, 0.04, 0.04]} />
-        <meshStandardMaterial color="#4a515c" metalness={0.82} roughness={0.35} />
       </mesh>
-      <mesh position={[0, h * 0.52, hz]} castShadow>
+      <mesh position={[0, h * 0.52, hz]} material={material} castShadow>
         <boxGeometry args={[hx * 2, 0.04, 0.04]} />
-        <meshStandardMaterial color="#4a515c" metalness={0.82} roughness={0.35} />
       </mesh>
-      <mesh position={[-hx, h * 0.52, 0]} castShadow>
+      <mesh position={[-hx, h * 0.52, 0]} material={material} castShadow>
         <boxGeometry args={[0.04, 0.04, hz * 2]} />
-        <meshStandardMaterial color="#4a515c" metalness={0.82} roughness={0.35} />
       </mesh>
-      <mesh position={[hx, h * 0.52, 0]} castShadow>
+      <mesh position={[hx, h * 0.52, 0]} material={material} castShadow>
         <boxGeometry args={[0.04, 0.04, hz * 2]} />
-        <meshStandardMaterial color="#4a515c" metalness={0.82} roughness={0.35} />
       </mesh>
     </group>
   )
@@ -206,14 +216,17 @@ function Scaffolding() {
 function ClothBay() {
   const materialRef = useRef<THREE.ShaderMaterial>(null)
   const geometry = useMemo(() => createClothGeometry(), [])
+  const cloth = useClothTextures()
   const { progress } = useScrollState()
   const uniforms = useMemo(
     () => ({
       uTime: { value: 0 },
       uWind: { value: 0.7 },
       uKey: { value: 0.5 },
+      uNormalMap: { value: cloth.normalMap },
+      uRoughMap: { value: cloth.roughnessMap },
     }),
-    [],
+    [cloth.normalMap, cloth.roughnessMap],
   )
 
   useFrame(({ clock }) => {
@@ -238,37 +251,32 @@ function ClothBay() {
   )
 }
 
-function FloorFan({ reducedMotion }: { reducedMotion: boolean }) {
+function FloorFan({ reducedMotion, material }: { reducedMotion: boolean; material: THREE.Material }) {
   const bladesRef = useRef<THREE.Group>(null)
 
   useFrame((_, delta) => {
     if (!bladesRef.current || reducedMotion) return
-    bladesRef.current.rotation.z -= delta * 14
+    bladesRef.current.rotation.z -= delta * 8
   })
 
   return (
     <group position={[3.9, 0, 0.25]} rotation={[0, -0.55, 0]}>
-      <mesh position={[0, 0.45, 0]} castShadow>
-        <cylinderGeometry args={[0.06, 0.1, 0.9, 16]} />
-        <meshStandardMaterial color="#1a1c22" metalness={0.75} roughness={0.35} />
+      <mesh position={[0, 0.45, 0]} material={material} castShadow>
+        <cylinderGeometry args={[0.06, 0.1, 0.9, 24]} />
       </mesh>
-      <mesh position={[0, 0.02, 0]} castShadow>
-        <cylinderGeometry args={[0.28, 0.32, 0.05, 24]} />
-        <meshStandardMaterial color="#12141a" metalness={0.7} roughness={0.4} />
+      <mesh position={[0, 0.02, 0]} material={material} castShadow>
+        <cylinderGeometry args={[0.28, 0.32, 0.05, 32]} />
       </mesh>
-      <mesh position={[0, 1.05, 0]} castShadow>
+      <mesh position={[0, 1.05, 0]} material={material} castShadow>
         <sphereGeometry args={[0.16, 24, 16]} />
-        <meshStandardMaterial color="#22252c" metalness={0.8} roughness={0.28} />
       </mesh>
-      <mesh position={[0, 1.05, 0.12]} castShadow>
-        <torusGeometry args={[0.38, 0.018, 12, 32]} />
-        <meshStandardMaterial color="#2a2e36" metalness={0.85} roughness={0.25} />
+      <mesh position={[0, 1.05, 0.12]} material={material} castShadow>
+        <torusGeometry args={[0.38, 0.018, 12, 40]} />
       </mesh>
       <group ref={bladesRef} position={[0, 1.05, 0.12]}>
         {[0, 1, 2].map((i) => (
-          <mesh key={i} rotation={[0, 0, (i * Math.PI * 2) / 3]} castShadow>
+          <mesh key={i} rotation={[0, 0, (i * Math.PI * 2) / 3]} material={material} castShadow>
             <boxGeometry args={[0.72, 0.1, 0.012]} />
-            <meshStandardMaterial color="#0c0d10" metalness={0.5} roughness={0.45} />
           </mesh>
         ))}
         <mesh>
@@ -287,21 +295,41 @@ function FloorFan({ reducedMotion }: { reducedMotion: boolean }) {
   )
 }
 
+function useSteelMaterial() {
+  const maps = useSteelTextures()
+  return useMemo(() => {
+    return new THREE.MeshPhysicalMaterial({
+      map: maps.map,
+      normalMap: maps.normalMap,
+      roughnessMap: maps.roughnessMap,
+      metalnessMap: maps.metalnessMap,
+      color: '#d7dee3',
+      metalness: 1,
+      roughness: 0.42,
+      normalScale: STEEL_NORMAL,
+      envMapIntensity: 1.05,
+      anisotropy: 0.5,
+      anisotropyRotation: Math.PI / 2,
+    })
+  }, [maps.map, maps.normalMap, maps.roughnessMap, maps.metalnessMap])
+}
+
 export function CloakedSimulator() {
   const { reducedMotion } = useScrollState()
   const groupRef = useRef<THREE.Group>(null)
+  const steel = useSteelMaterial()
 
   useFrame(({ clock }) => {
     if (!groupRef.current || reducedMotion) return
-    groupRef.current.rotation.y = Math.sin(clock.elapsedTime * 0.12) * 0.008
+    groupRef.current.rotation.y = Math.sin(clock.elapsedTime * 0.08) * 0.006
   })
 
   return (
     <group ref={groupRef} position={[0, 0, -0.35]} rotation={[0, -0.08, 0]}>
-      <Scaffolding />
+      <Scaffolding material={steel} />
       <BlackoutVolume />
       <ClothBay />
-      <FloorFan reducedMotion={reducedMotion} />
+      <FloorFan reducedMotion={reducedMotion} material={steel} />
       <ContactShadows
         position={[0, 0.004, 0]}
         opacity={0.65}

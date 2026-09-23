@@ -14,7 +14,7 @@ export function Chapters() {
             <section key={chapter.id} className="static-copy__block">
               {chapter.kicker ? <p className="chapter__kicker">{chapter.kicker}</p> : null}
               <h2 className="static-copy__headline">{chapter.headline}</h2>
-              <p className="chapter__body">{chapter.body}</p>
+              <p className={chapter.id === 'ask' ? 'chapter__quote' : 'chapter__body'}>{chapter.body}</p>
             </section>
           ))}
           <div className="chapter__actions">
@@ -72,7 +72,7 @@ export function Chapters() {
           >
             {chapter.kicker ? <p className="chapter__kicker">{chapter.kicker}</p> : null}
             <h1 className="chapter__headline">{chapter.headline}</h1>
-            <p className="chapter__body">{chapter.body}</p>
+            <p className={chapter.id === 'ask' ? 'chapter__quote' : 'chapter__body'}>{chapter.body}</p>
             {chapter.id === 'ask' && (
               <>
                 <div className="chapter__actions">

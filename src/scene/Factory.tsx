@@ -3,6 +3,10 @@ import * as THREE from 'three'
 import { useFrame } from '@react-three/fiber'
 import { useScrollState } from '../hooks/useScrollContext'
 import { mapRange } from '../lib/scroll'
+import { useConcreteTextures, usePanelTextures } from './textures'
+
+const CONCRETE_NORMAL = new THREE.Vector2(1.35, 1.35)
+const PANEL_NORMAL = new THREE.Vector2(1.05, 1.05)
 
 const gridVertex = /* glsl */ `
   varying vec3 vWorldPos;
@@ -15,7 +19,6 @@ const gridVertex = /* glsl */ `
 
 const gridFragment = /* glsl */ `
   uniform float uFade;
-  uniform vec3 uFogColor;
   uniform float uFogNear;
   uniform float uFogFar;
   varying vec3 vWorldPos;
@@ -27,22 +30,18 @@ const gridFragment = /* glsl */ `
 
   void main() {
     vec2 uv = vWorldPos.xz;
-    float major = max(line(uv.x / 4.0, 1.2), line(uv.y / 4.0, 1.2));
-    float minor = max(line(uv.x, 1.0), line(uv.y, 1.0));
+    float major = max(line(uv.x / 4.0, 1.35), line(uv.y / 4.0, 1.35));
+    float minor = max(line(uv.x, 1.15), line(uv.y, 1.15));
 
-    vec3 base = vec3(0.035, 0.038, 0.045);
-    vec3 cyan = vec3(0.15, 0.75, 0.85);
+    vec3 cyan = vec3(0.18, 0.78, 0.86);
     vec3 orange = vec3(0.91, 0.36, 0.04);
 
-    float g = minor * 0.22 + major * 0.55;
-    vec3 col = base + cyan * g * 0.55;
-    col += orange * major * 0.08 * uFade;
+    float lines = clamp(minor * 0.22 + major * 0.85, 0.0, 1.0);
+    vec3 col = mix(cyan, orange, major * 0.18 * uFade);
 
     float dist = length(vWorldPos.xz);
     float fog = smoothstep(uFogNear, uFogFar, dist);
-    col = mix(col, uFogColor, fog);
-
-    float alpha = (0.35 + g * 0.65) * (1.0 - fog * 0.95);
+    float alpha = lines * (1.0 - fog) * 0.38;
     gl_FragColor = vec4(col, alpha);
   }
 `
@@ -50,15 +49,20 @@ const gridFragment = /* glsl */ `
 function InfiniteFloor() {
   const materialRef = useRef<THREE.ShaderMaterial>(null)
   const { progress } = useScrollState()
+  const concrete = useConcreteTextures()
   const uniforms = useMemo(
     () => ({
       uFade: { value: 0.4 },
-      uFogColor: { value: new THREE.Color('#05060a') },
       uFogNear: { value: 18 },
       uFogFar: { value: 55 },
     }),
     [],
   )
+  const floorGeometry = useMemo(() => {
+    const geo = new THREE.PlaneGeometry(160, 160)
+    geo.setAttribute('uv2', geo.getAttribute('uv'))
+    return geo
+  }, [])
 
   useFrame(() => {
     if (!materialRef.current) return
@@ -66,17 +70,33 @@ function InfiniteFloor() {
   })
 
   return (
-    <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, 0, 0]} receiveShadow>
-      <planeGeometry args={[160, 160]} />
-      <shaderMaterial
-        ref={materialRef}
-        uniforms={uniforms}
-        vertexShader={gridVertex}
-        fragmentShader={gridFragment}
-        transparent
-        depthWrite={false}
-      />
-    </mesh>
+    <group>
+      <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, 0, 0]} geometry={floorGeometry} receiveShadow>
+        <meshStandardMaterial
+          map={concrete.map}
+          normalMap={concrete.normalMap}
+          roughnessMap={concrete.roughnessMap}
+          aoMap={concrete.aoMap}
+          aoMapIntensity={0.9}
+          color="#e4e8ea"
+          roughness={0.92}
+          metalness={0.06}
+          envMapIntensity={0.45}
+          normalScale={CONCRETE_NORMAL}
+        />
+      </mesh>
+      <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, 0.012, 0]}>
+        <planeGeometry args={[160, 160]} />
+        <shaderMaterial
+          ref={materialRef}
+          uniforms={uniforms}
+          vertexShader={gridVertex}
+          fragmentShader={gridFragment}
+          transparent
+          depthWrite={false}
+        />
+      </mesh>
+    </group>
   )
 }
 
@@ -126,7 +146,7 @@ function GridWall({
             float fadeY = smoothstep(0.0, 0.15, vUv.y) * (1.0 - smoothstep(0.7, 1.0, vUv.y));
             float dist = length(vWorldPos.xz);
             float fog = smoothstep(20.0, 48.0, dist);
-            float alpha = mask * fadeY * 0.55 * (1.0 - fog);
+            float alpha = mask * fadeY * 0.34 * (1.0 - fog);
             gl_FragColor = vec4(mix(col, uFogColor, fog * 0.6), alpha);
           }
         `}
@@ -237,11 +257,43 @@ function BayMark({ position }: { position: [number, number, number] }) {
   )
 }
 
-/** Infinite cyber-industrial void: grid floor, distant grid walls, bay mark. */
+function PanelWalls() {
+  const panels = usePanelTextures()
+  const walls: { position: [number, number, number]; rotation: [number, number, number] }[] = [
+    { position: [0, 7.2, -30.2], rotation: [0, 0, 0] },
+    { position: [0, 7.2, 26.2], rotation: [0, Math.PI, 0] },
+    { position: [-30.2, 7.2, 0], rotation: [0, Math.PI / 2, 0] },
+    { position: [30.2, 7.2, 0], rotation: [0, -Math.PI / 2, 0] },
+  ]
+
+  return (
+    <group>
+      {walls.map((wall) => (
+        <mesh key={wall.position.join(',')} position={wall.position} rotation={wall.rotation} receiveShadow>
+          <planeGeometry args={[72, 16]} />
+          <meshStandardMaterial
+            map={panels.map}
+            normalMap={panels.normalMap}
+            roughnessMap={panels.roughnessMap}
+            metalnessMap={panels.metalnessMap}
+            color="#b7bdc2"
+            metalness={0.72}
+            roughness={0.58}
+            envMapIntensity={0.7}
+            normalScale={PANEL_NORMAL}
+          />
+        </mesh>
+      ))}
+    </group>
+  )
+}
+
+/** Concrete floor, worn metal walls, grid, bay mark. */
 export function Factory() {
   return (
     <group>
       <InfiniteFloor />
+      <PanelWalls />
       <GridWall position={[0, 8, -28]} rotation={[0, 0, 0]} />
       <GridWall position={[0, 8, 24]} rotation={[0, Math.PI, 0]} />
       <GridWall position={[-28, 8, 0]} rotation={[0, Math.PI / 2, 0]} />

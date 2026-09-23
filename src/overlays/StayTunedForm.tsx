@@ -39,7 +39,7 @@ export function StayTunedForm() {
 
       if (!response.ok) throw new Error('Request failed')
       setStatus('done')
-      setMessage('You are on the list. We will keep you posted.')
+      setMessage('You’re on the list.')
       setEmail('')
     } catch {
       setStatus('error')

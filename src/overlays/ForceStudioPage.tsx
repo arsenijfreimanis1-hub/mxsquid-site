@@ -1,3 +1,4 @@
+import { useEffect, useState } from 'react'
 import { SITE } from '../lib/site'
 
 type ForceStudioPageProps = {
@@ -6,28 +7,86 @@ type ForceStudioPageProps = {
 
 const STEPS = [
   {
-    title: 'Download and extract',
-    body: 'Save the zip on the Windows PC that runs MX Bikes, then unzip it. You should see MX Force Studio.bat in the folder.',
+    title: 'Unzip it',
+    body: 'On the PC that runs MX Bikes. You’ll see MX Force Studio.bat.',
   },
   {
-    title: 'Run the installer',
-    body: 'Double-click MX Force Studio.bat. If SmartScreen says Windows protected your PC, click More info, then Run anyway.',
+    title: 'Double-click it',
+    body: 'If Windows warns you, hit More info, then Run anyway.',
   },
   {
-    title: 'Wait for APP READY',
-    body: 'Leave the black window open. The first run downloads portable Node.js, builds the app, copies the plugin next to mxbikes.exe, and drops a Desktop shortcut.',
+    title: 'Leave the window open',
+    body: 'First run sets itself up and puts a shortcut on the Desktop.',
   },
   {
     title: 'Start MX Bikes',
-    body: 'Launch MX Bikes on this same PC and go on track. If the game was already running, restart it so the plugin can load.',
+    body: 'Same PC. If the game was already open, restart it.',
   },
   {
     title: 'Connect',
-    body: 'A browser tab opens at 127.0.0.1:43187. Click Connect. The garage deck follows the live bike.',
+    body: 'A tab opens. Click Connect once you’re on track.',
   },
 ] as const
 
+const COMMITS_URL =
+  'https://api.github.com/repos/arsenijfreimanis1-hub/mx-force-studio/commits?per_page=20'
+
+type GithubCommit = {
+  html_url: string
+  commit: {
+    message: string
+    author?: { date?: string }
+    committer?: { date?: string }
+  }
+}
+
+type RepoUpdate = {
+  iso: string
+  label: string
+  summary: string
+  href: string
+}
+
+function useRepoUpdate(): RepoUpdate | null {
+  const [update, setUpdate] = useState<RepoUpdate | null>(null)
+
+  useEffect(() => {
+    let cancelled = false
+    fetch(COMMITS_URL, { headers: { Accept: 'application/vnd.github+json' } })
+      .then((response) => (response.ok ? response.json() : Promise.reject(new Error('GitHub'))))
+      .then((commits: GithubCommit[]) => {
+        if (cancelled || !Array.isArray(commits) || commits.length === 0) return
+        const stamped = commits.find((commit) =>
+          /^Stamp the Windows launcher\b/i.test(commit.commit.message),
+        )
+        const pick = stamped ?? commits[0]
+        const iso = pick.commit.committer?.date ?? pick.commit.author?.date
+        if (!iso) return
+        const subject = pick.commit.message.split('\n')[0]?.trim() ?? ''
+        const summary = subject
+          .replace(/^Stamp the Windows launcher for\s+/i, '')
+          .replace(/\.$/, '')
+        const when = new Date(iso)
+        const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
+        setUpdate({
+          iso,
+          label: `${when.getUTCDate()} ${months[when.getUTCMonth()]} ${when.getUTCFullYear()}`,
+          summary,
+          href: pick.html_url,
+        })
+      })
+      .catch(() => {})
+
+    return () => {
+      cancelled = true
+    }
+  }, [])
+
+  return update
+}
+
 export function ForceStudioPage({ onHome }: ForceStudioPageProps) {
+  const updated = useRepoUpdate()
   return (
     <main className="page page--studio">
       <div className="page__glow" aria-hidden="true" />
@@ -37,11 +96,9 @@ export function ForceStudioPage({ onHome }: ForceStudioPageProps) {
           <img className="studio-brand__icon" src="/force-studio-icon.png" alt="" />
           <img className="studio-brand__mx" src="/mx-bikes-logo.png" alt="MX Bikes" />
         </div>
-        <h1 className="page__title">Garage 6DOF for MX Bikes.</h1>
+        <h1 className="page__title">It moves with the bike.</h1>
         <p className="page__lede">
-          A live deck that leans, wheelies, and jumps with the bike on your Windows gaming PC.
-          No Node, Git, or Visual Studio required. View the source, or download and run it next
-          to MX Bikes.
+          Leans, wheelies, jumps. Same PC as MX Bikes.
         </p>
 
         <div className="studio-actions">
@@ -53,10 +110,7 @@ export function ForceStudioPage({ onHome }: ForceStudioPageProps) {
           >
             <p className="studio-card__kicker">Source</p>
             <h2 className="studio-card__title">View the GitHub repo</h2>
-            <p className="studio-card__body">
-              Browse mx-force-studio, the plugin, and the Windows launcher. Open issues or clone
-              it if you would rather build from source.
-            </p>
+            <p className="studio-card__body">The plugin, the launcher, the code.</p>
             <span className="studio-card__cta">Open on GitHub</span>
           </a>
 
@@ -68,12 +122,23 @@ export function ForceStudioPage({ onHome }: ForceStudioPageProps) {
             <p className="studio-card__kicker">Windows + MX Bikes</p>
             <h2 className="studio-card__title">Download for this PC</h2>
             <p className="studio-card__body">
-              Direct zip of the repo. Extract it on the machine that has MX Bikes, then
-              double-click MX Force Studio.bat. Steam libraries are found automatically.
+              Unzip it next to MX Bikes. Double-click the bat file.
             </p>
             <span className="studio-card__cta">Download mx-force-studio.zip</span>
           </a>
         </div>
+
+        {updated ? (
+          <a
+            className="studio-updated"
+            href={updated.href}
+            target="_blank"
+            rel="noreferrer noopener"
+          >
+            Last updated <time dateTime={updated.iso}>{updated.label}</time>
+            {updated.summary ? <span>— {updated.summary}</span> : null}
+          </a>
+        ) : null}
 
         <section className="vision-block">
           <h2 className="vision-block__title">Install on the MX Bikes PC</h2>
@@ -95,10 +160,8 @@ export function ForceStudioPage({ onHome }: ForceStudioPageProps) {
         <section className="vision-block">
           <h2 className="vision-block__title">What you get</h2>
           <p className="vision-block__body">
-            The bike sits still until you are on track, or you pick up an Xbox pad. Then the deck
-            follows roll, pitch, jumps, and crashes. Logging stays off until you press it. Save
-            writes a CSV next to the plugin at MX Bikes\plugins\force_studio_logs\. Close the
-            black window to stop. Next time, use the Desktop icon.
+            On track, the deck follows the bike. Close the black window when you’re done. Next
+            time, use the Desktop icon.
           </p>
         </section>
 
