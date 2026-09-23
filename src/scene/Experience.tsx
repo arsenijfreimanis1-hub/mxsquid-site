@@ -55,14 +55,14 @@ function cameraForScroll(t: number, outPos: THREE.Vector3, outLook: THREE.Vector
 }
 
 function SceneLights({ progress }: { progress: number }) {
-  const reveal = mapRange(progress, 0.12, 0.4, 0, 1)
-  const key = lerp(0.08, 1.2, mapRange(progress, 0.12, 0.85, 0, 1))
-  const accent = lerp(0.02, 0.6, mapRange(progress, 0.35, 0.9, 0, 1))
+  const reveal = mapRange(progress, 0.1, 0.38, 0, 1)
+  const key = lerp(0.22, 1.45, mapRange(progress, 0.1, 0.8, 0, 1))
+  const accent = lerp(0.04, 0.7, mapRange(progress, 0.3, 0.9, 0, 1))
 
   return (
     <>
-      <ambientLight intensity={0.04 + progress * 0.08} />
-      <hemisphereLight intensity={0.08 + reveal * 0.14} color="#1a3040" groundColor="#05060a" />
+      <ambientLight intensity={0.07 + progress * 0.08} />
+      <hemisphereLight intensity={0.12 + reveal * 0.16} color="#243848" groundColor="#121418" />
       <directionalLight
         position={[6, 12, 4]}
         intensity={key}
@@ -103,7 +103,7 @@ export function Experience() {
     const raw = Math.min(1, progress)
     const biased = Math.min(1, Math.pow(raw, 0.78))
     const targetT = reducedMotion ? 0.08 : biased
-    smoothT.current += (targetT - smoothT.current) * Math.min(1, delta * 2.3)
+    smoothT.current += (targetT - smoothT.current) * (1 - Math.exp(-delta * 1.8))
     const t = smoothT.current
 
     cameraForScroll(t, scratchPos.current, scratchLook.current)
@@ -112,13 +112,13 @@ export function Experience() {
 
     const targetPos = scratchPos.current.clone().add(
       new THREE.Vector3(
-        Math.sin(time * 0.08) * 0.04 * settle,
-        Math.sin(time * 0.12) * 0.015 * settle,
-        Math.cos(time * 0.07) * 0.03 * settle,
+        Math.sin(time * 0.045) * 0.028 * settle,
+        Math.sin(time * 0.07) * 0.01 * settle,
+        Math.cos(time * 0.04) * 0.02 * settle,
       ),
     )
 
-    const smoothFactor = 1 - Math.pow(0.00035, delta)
+    const smoothFactor = 1 - Math.exp(-delta * 3.4)
     smoothPos.current.lerp(targetPos, smoothFactor)
     lookAt.current.lerp(scratchLook.current, smoothFactor)
 
@@ -145,15 +145,15 @@ export function Experience() {
       <Factory />
       <CloakedSimulator />
       <EffectComposer multisampling={4} enableNormalPass={false}>
-        <Bloom intensity={0.48} luminanceThreshold={0.74} luminanceSmoothing={0.3} mipmapBlur />
-        <Noise opacity={0.03} blendFunction={BlendFunction.SOFT_LIGHT} />
+        <Bloom intensity={0.42} luminanceThreshold={0.78} luminanceSmoothing={0.45} mipmapBlur />
+        <Noise opacity={0.012} blendFunction={BlendFunction.SOFT_LIGHT} />
         <ChromaticAberration
           blendFunction={BlendFunction.NORMAL}
-          offset={new THREE.Vector2(0.00025, 0.00025)}
+          offset={new THREE.Vector2(0.00012, 0.00012)}
           radialModulation={false}
           modulationOffset={0}
         />
-        <Vignette offset={0.2} darkness={0.8} />
+        <Vignette offset={0.28} darkness={0.62} />
       </EffectComposer>
     </>
   )

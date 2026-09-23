@@ -6,8 +6,12 @@ function scrollMax() {
   return document.documentElement.scrollHeight - window.innerHeight
 }
 
-const SNAP_DURATION = 1.05
-const SNAP_LOCK_MS = 980
+const SNAP_DURATION = 1.35
+const SNAP_LOCK_MS = 1280
+
+function easeInOutCubic(t: number) {
+  return t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2
+}
 
 export function useLenisScroll(reducedMotion: boolean, enabled = true) {
   const [progress, setProgress] = useState(0)
@@ -34,7 +38,7 @@ export function useLenisScroll(reducedMotion: boolean, enabled = true) {
       lockingRef.current = true
       lenisRef.current.scrollTo(y, {
         duration: SNAP_DURATION,
-        easing: (x) => 1 - Math.pow(1 - x, 3),
+        easing: easeInOutCubic,
       })
       window.setTimeout(() => {
         lockingRef.current = false
@@ -79,7 +83,7 @@ export function useLenisScroll(reducedMotion: boolean, enabled = true) {
 
     const lenis = new Lenis({
       duration: SNAP_DURATION,
-      easing: (t) => 1 - Math.pow(1 - t, 3),
+      easing: easeInOutCubic,
       smoothWheel: false,
       syncTouch: false,
       touchMultiplier: 0,
@@ -137,10 +141,13 @@ export function useLenisScroll(reducedMotion: boolean, enabled = true) {
     window.addEventListener('touchend', onTouchEnd, { passive: true })
 
     let frame = 0
+    let last = performance.now()
     const raf = (time: number) => {
+      const delta = Math.min(0.05, (time - last) / 1000)
+      last = time
       lenis.raf(time)
-      // Snappier follow so chapter text and camera settle together.
-      current += (target - current) * 0.16
+      const follow = 1 - Math.exp(-delta * 7)
+      current += (target - current) * follow
       progressRef.current = current
       setProgress(current)
       frame = requestAnimationFrame(raf)

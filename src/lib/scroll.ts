@@ -20,49 +20,49 @@ export const CHAPTERS: Chapter[] = [
     id: 'brand',
     start: 0,
     end: 0.18,
-    kicker: 'MXsquid',
+    kicker: '',
     headline: 'Under wraps.',
-    body: 'That covered bay is the first hyper-realistic motocross simulator - still being built.',
+    body: 'A real motocross simulator. Still being built.',
   },
   {
     id: 'empty',
     start: 0.18,
     end: 0.34,
-    kicker: 'Where we are',
+    kicker: '',
     headline: 'Empty floor.',
-    body: 'Nothing on the line yet. Just space waiting for a build.',
+    body: 'Nothing here yet. Just room to build.',
   },
   {
     id: 'manufacturers',
     start: 0.34,
     end: 0.5,
-    kicker: 'Partners',
+    kicker: '',
     headline: 'No factory yet.',
-    body: 'When a partner signs, this void becomes their floor.',
+    body: 'When someone builds this with me, the floor is theirs.',
   },
   {
     id: 'investors',
     start: 0.5,
     end: 0.66,
-    kicker: 'Capital',
+    kicker: '',
     headline: 'No capital yet.',
-    body: 'Vision first. Round later.',
+    body: 'The idea first. The round after.',
   },
   {
     id: 'approach',
     start: 0.66,
     end: 0.82,
-    kicker: 'Coming soon',
-    headline: 'Stay tuned for the big reveal.',
-    body: 'The simulator stays under this cover until it is ready to show.',
+    kicker: '',
+    headline: 'Stay tuned.',
+    body: 'The cover stays on until it’s ready.',
   },
   {
     id: 'ask',
     start: 0.82,
     end: 1,
-    kicker: 'Join the build',
-    headline: 'Help make it real.',
-    body: 'Engineers. Manufacturers. Investors. Venues.',
+    kicker: '',
+    headline: 'Help',
+    body: '"Make it Happen" - AJ',
   },
 ]
 
@@ -99,7 +99,7 @@ export function chapterOpacity(progress: number, chapter: Chapter): number {
   const last = CHAPTERS[CHAPTERS.length - 1]
   const span = chapter.end - chapter.start
   const local = (progress - chapter.start) / span
-  const fade = Math.min(span * 0.4, 0.1)
+  const fade = Math.min(span * 0.48, 0.14)
 
   // First beat stays fully visible at progress 0 (no fade-in from zero).
   const enter = chapter.id === first.id ? 1 : Math.min(1, local / fade)
