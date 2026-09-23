@@ -1,12 +1,13 @@
 import { useMemo, useRef } from 'react'
 import * as THREE from 'three'
-import { ContactShadows } from '@react-three/drei'
+import { ContactShadows, Html } from '@react-three/drei'
 import { useFrame } from '@react-three/fiber'
 import { useScrollState } from '../hooks/useScrollContext'
-import { mapRange } from '../lib/scroll'
-import { useClothTextures, useSteelTextures } from './textures'
+import { SIM_FACTS, chapterOpacity, getChapter, mapRange } from '../lib/scroll'
+import { useCarbonTextures, useClothTextures, useSteelTextures } from './textures'
 
 const STEEL_NORMAL = new THREE.Vector2(0.22, 0.22)
+const CARBON_NORMAL = new THREE.Vector2(1.15, 1.15)
 
 /** Sealed cloth volume on exterior scaffolding. Corners stay connected. */
 const BAY = { w: 4.5, d: 3.3, h: 2.2 }
@@ -157,7 +158,7 @@ function BlackoutVolume() {
   )
 }
 
-function Scaffolding({ material }: { material: THREE.Material }) {
+function Scaffolding({ steel, carbon }: { steel: THREE.Material; carbon: THREE.Material }) {
   const { w, d, h } = BAY
   // Outside the cloth so poles actually read as holding the cover.
   const hx = w / 2 + 0.22
@@ -174,39 +175,39 @@ function Scaffolding({ material }: { material: THREE.Material }) {
     <group>
       {poles.map(([x, z], i) => (
         <group key={i}>
-          <mesh position={[x, poleH * 0.5, z]} material={material} castShadow>
+          <mesh position={[x, poleH * 0.5, z]} material={steel} castShadow>
             <cylinderGeometry args={[0.055, 0.06, poleH, 24]} />
           </mesh>
-          <mesh position={[x, poleH + 0.03, z]} material={material} castShadow>
+          <mesh position={[x, poleH + 0.03, z]} material={carbon} castShadow>
             <cylinderGeometry args={[0.085, 0.085, 0.06, 20]} />
           </mesh>
-          <mesh position={[x, 0.04, z]} material={material} castShadow>
+          <mesh position={[x, 0.04, z]} material={steel} castShadow>
             <cylinderGeometry args={[0.12, 0.14, 0.08, 20]} />
           </mesh>
         </group>
       ))}
-      <mesh position={[0, h + 0.04, -hz]} material={material} castShadow>
+      <mesh position={[0, h + 0.04, -hz]} material={carbon} castShadow>
         <boxGeometry args={[hx * 2 + 0.06, 0.06, 0.06]} />
       </mesh>
-      <mesh position={[0, h + 0.04, hz]} material={material} castShadow>
+      <mesh position={[0, h + 0.04, hz]} material={carbon} castShadow>
         <boxGeometry args={[hx * 2 + 0.06, 0.06, 0.06]} />
       </mesh>
-      <mesh position={[-hx, h + 0.04, 0]} material={material} castShadow>
+      <mesh position={[-hx, h + 0.04, 0]} material={carbon} castShadow>
         <boxGeometry args={[0.06, 0.06, hz * 2 + 0.06]} />
       </mesh>
-      <mesh position={[hx, h + 0.04, 0]} material={material} castShadow>
+      <mesh position={[hx, h + 0.04, 0]} material={carbon} castShadow>
         <boxGeometry args={[0.06, 0.06, hz * 2 + 0.06]} />
       </mesh>
-      <mesh position={[0, h * 0.52, -hz]} material={material} castShadow>
+      <mesh position={[0, h * 0.52, -hz]} material={carbon} castShadow>
         <boxGeometry args={[hx * 2, 0.04, 0.04]} />
       </mesh>
-      <mesh position={[0, h * 0.52, hz]} material={material} castShadow>
+      <mesh position={[0, h * 0.52, hz]} material={carbon} castShadow>
         <boxGeometry args={[hx * 2, 0.04, 0.04]} />
       </mesh>
-      <mesh position={[-hx, h * 0.52, 0]} material={material} castShadow>
+      <mesh position={[-hx, h * 0.52, 0]} material={carbon} castShadow>
         <boxGeometry args={[0.04, 0.04, hz * 2]} />
       </mesh>
-      <mesh position={[hx, h * 0.52, 0]} material={material} castShadow>
+      <mesh position={[hx, h * 0.52, 0]} material={carbon} castShadow>
         <boxGeometry args={[0.04, 0.04, hz * 2]} />
       </mesh>
     </group>
@@ -295,6 +296,46 @@ function FloorFan({ reducedMotion, material }: { reducedMotion: boolean; materia
   )
 }
 
+function CarbonDeck({ material }: { material: THREE.Material }) {
+  return (
+    <mesh position={[0, 0.04, 0]} material={material} receiveShadow castShadow>
+      <boxGeometry args={[5.15, 0.055, 3.9]} />
+    </mesh>
+  )
+}
+
+function SimBubble() {
+  const { progress } = useScrollState()
+  if (progress < 0.16) return null
+  const chapter = getChapter(progress)
+  const opacity = chapterOpacity(progress, chapter)
+
+  return (
+    <Html position={[0, BAY.h + 0.95, 0]} center distanceFactor={7} zIndexRange={[4, 0]} style={{ pointerEvents: 'none' }}>
+      <div className="sim-bubble" style={{ opacity }} key={chapter.id}>
+        <p>{SIM_FACTS[chapter.id]}</p>
+      </div>
+    </Html>
+  )
+}
+
+function useCarbonMaterial() {
+  const maps = useCarbonTextures()
+  return useMemo(() => {
+    return new THREE.MeshPhysicalMaterial({
+      map: maps.map,
+      normalMap: maps.normalMap,
+      color: '#8d8d8d',
+      metalness: 0.55,
+      roughness: 0.32,
+      clearcoat: 0.9,
+      clearcoatRoughness: 0.16,
+      normalScale: CARBON_NORMAL,
+      envMapIntensity: 1.25,
+    })
+  }, [maps.map, maps.normalMap])
+}
+
 function useSteelMaterial() {
   const maps = useSteelTextures()
   return useMemo(() => {
@@ -318,6 +359,7 @@ export function CloakedSimulator() {
   const { reducedMotion } = useScrollState()
   const groupRef = useRef<THREE.Group>(null)
   const steel = useSteelMaterial()
+  const carbon = useCarbonMaterial()
 
   useFrame(({ clock }) => {
     if (!groupRef.current || reducedMotion) return
@@ -326,10 +368,12 @@ export function CloakedSimulator() {
 
   return (
     <group ref={groupRef} position={[0, 0, -0.35]} rotation={[0, -0.08, 0]}>
-      <Scaffolding material={steel} />
+      <CarbonDeck material={carbon} />
+      <Scaffolding steel={steel} carbon={carbon} />
       <BlackoutVolume />
       <ClothBay />
-      <FloorFan reducedMotion={reducedMotion} material={steel} />
+      <SimBubble />
+      <FloorFan reducedMotion={reducedMotion} material={carbon} />
       <ContactShadows
         position={[0, 0.004, 0]}
         opacity={0.65}
