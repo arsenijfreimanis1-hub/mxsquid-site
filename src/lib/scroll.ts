@@ -67,6 +67,16 @@ export const CHAPTERS: Chapter[] = [
 ]
 
 /** Discrete scroll stops - one per story beat. */
+/** Short facts shown above the covered machine, one per scroll stop. */
+export const SIM_FACTS: Record<ChapterId, string> = {
+  brand: 'A real motocross simulator. Not a game.',
+  empty: 'The first one still has to be built.',
+  manufacturers: 'It has to lean like a bike, not a pad.',
+  investors: 'You feel the weight, the throttle, and the hit.',
+  approach: 'The cover comes off when you can ride it.',
+  ask: 'AJ raced motocross for five years.',
+}
+
 export const CHAPTER_SNAPS: number[] = CHAPTERS.map((chapter, index) => {
   if (index === 0) return 0
   if (index === CHAPTERS.length - 1) return 1
