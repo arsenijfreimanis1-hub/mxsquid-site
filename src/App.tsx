@@ -9,6 +9,7 @@ import { BrandNav } from './overlays/BrandNav'
 import { VisionPage } from './overlays/VisionPage'
 import { WhyNowPage } from './overlays/WhyNowPage'
 import { ForceStudioPage } from './overlays/ForceStudioPage'
+import { LavaLamp } from './overlays/LavaLamp'
 import './index.css'
 
 function CanvasScene() {
@@ -17,7 +18,8 @@ function CanvasScene() {
       shadows
       dpr={[1, 1.75]}
       camera={{ fov: 44, near: 0.1, far: 120, position: [0.2, 3.8, 3.2] }}
-      gl={{ antialias: true, powerPreference: 'high-performance' }}
+      gl={{ antialias: true, alpha: true, powerPreference: 'high-performance' }}
+      style={{ background: 'transparent' }}
     >
       <Suspense fallback={null}>
         <Experience />
@@ -45,6 +47,9 @@ export default function App() {
   return (
     <ScrollContext.Provider value={scrollValue}>
       <div className={`app${onHome ? '' : ' app--page'}`}>
+        <div className={`lava-shell${onHome ? '' : ' lava-shell--dim'}`} aria-hidden="true">
+          <LavaLamp reducedMotion={reducedMotion} />
+        </div>
         <div className={`canvas-shell${onHome ? '' : ' canvas-shell--dim'}`} aria-hidden={!onHome}>
           <CanvasScene />
         </div>

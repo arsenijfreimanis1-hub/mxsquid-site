@@ -38,24 +38,6 @@ export function useConcreteTextures() {
   return maps
 }
 
-export function useSteelTextures() {
-  const maps = useTexture({
-    map: '/textures/steel/diff.jpg',
-    normalMap: '/textures/steel/nor.jpg',
-    roughnessMap: '/textures/steel/rough.jpg',
-    metalnessMap: '/textures/steel/metal.jpg',
-  })
-
-  useOnce(() => {
-    prep(maps.map, 1.4, 3.2, true)
-    prep(maps.normalMap, 1.4, 3.2, false)
-    prep(maps.roughnessMap, 1.4, 3.2, false)
-    prep(maps.metalnessMap, 1.4, 3.2, false)
-  })
-
-  return maps
-}
-
 export function usePanelTextures() {
   const maps = useTexture({
     map: '/textures/panels/diff.jpg',

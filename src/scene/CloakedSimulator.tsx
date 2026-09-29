@@ -4,9 +4,8 @@ import { ContactShadows, Html } from '@react-three/drei'
 import { useFrame } from '@react-three/fiber'
 import { useScrollState } from '../hooks/useScrollContext'
 import { SIM_FACTS, chapterOpacity, getChapter, mapRange } from '../lib/scroll'
-import { useCarbonTextures, useClothTextures, useSteelTextures } from './textures'
+import { useCarbonTextures, useClothTextures } from './textures'
 
-const STEEL_NORMAL = new THREE.Vector2(0.22, 0.22)
 const CARBON_NORMAL = new THREE.Vector2(1.15, 1.15)
 
 /** Sealed cloth volume on exterior scaffolding. Corners stay connected. */
@@ -158,7 +157,7 @@ function BlackoutVolume() {
   )
 }
 
-function Scaffolding({ steel, carbon }: { steel: THREE.Material; carbon: THREE.Material }) {
+function Scaffolding({ carbon }: { carbon: THREE.Material }) {
   const { w, d, h } = BAY
   // Outside the cloth so poles actually read as holding the cover.
   const hx = w / 2 + 0.22
@@ -175,13 +174,13 @@ function Scaffolding({ steel, carbon }: { steel: THREE.Material; carbon: THREE.M
     <group>
       {poles.map(([x, z], i) => (
         <group key={i}>
-          <mesh position={[x, poleH * 0.5, z]} material={steel} castShadow>
+          <mesh position={[x, poleH * 0.5, z]} material={carbon} castShadow>
             <cylinderGeometry args={[0.055, 0.06, poleH, 24]} />
           </mesh>
           <mesh position={[x, poleH + 0.03, z]} material={carbon} castShadow>
             <cylinderGeometry args={[0.085, 0.085, 0.06, 20]} />
           </mesh>
-          <mesh position={[x, 0.04, z]} material={steel} castShadow>
+          <mesh position={[x, 0.04, z]} material={carbon} castShadow>
             <cylinderGeometry args={[0.12, 0.14, 0.08, 20]} />
           </mesh>
         </group>
@@ -280,18 +279,11 @@ function FloorFan({ reducedMotion, material }: { reducedMotion: boolean; materia
             <boxGeometry args={[0.72, 0.1, 0.012]} />
           </mesh>
         ))}
-        <mesh>
+        <mesh material={material}>
           <cylinderGeometry args={[0.05, 0.05, 0.04, 16]} />
-          <meshStandardMaterial
-            color="#e85d04"
-            metalness={0.6}
-            roughness={0.3}
-            emissive="#e85d04"
-            emissiveIntensity={0.25}
-          />
         </mesh>
       </group>
-      <pointLight position={[-0.4, 1.1, 0.6]} intensity={0.35} distance={3.5} color="#8ad4e0" />
+      <pointLight position={[-0.4, 1.1, 0.6]} intensity={0.2} distance={3.5} color="#8ad4e0" />
     </group>
   )
 }
@@ -325,40 +317,20 @@ function useCarbonMaterial() {
     return new THREE.MeshPhysicalMaterial({
       map: maps.map,
       normalMap: maps.normalMap,
-      color: '#8d8d8d',
-      metalness: 0.55,
-      roughness: 0.32,
-      clearcoat: 0.9,
-      clearcoatRoughness: 0.16,
+      color: '#6f6f6f',
+      metalness: 0.28,
+      roughness: 0.58,
+      clearcoat: 0.2,
+      clearcoatRoughness: 0.45,
       normalScale: CARBON_NORMAL,
-      envMapIntensity: 1.25,
+      envMapIntensity: 0.45,
     })
   }, [maps.map, maps.normalMap])
-}
-
-function useSteelMaterial() {
-  const maps = useSteelTextures()
-  return useMemo(() => {
-    return new THREE.MeshPhysicalMaterial({
-      map: maps.map,
-      normalMap: maps.normalMap,
-      roughnessMap: maps.roughnessMap,
-      metalnessMap: maps.metalnessMap,
-      color: '#d7dee3',
-      metalness: 1,
-      roughness: 0.42,
-      normalScale: STEEL_NORMAL,
-      envMapIntensity: 1.05,
-      anisotropy: 0.5,
-      anisotropyRotation: Math.PI / 2,
-    })
-  }, [maps.map, maps.normalMap, maps.roughnessMap, maps.metalnessMap])
 }
 
 export function CloakedSimulator() {
   const { reducedMotion } = useScrollState()
   const groupRef = useRef<THREE.Group>(null)
-  const steel = useSteelMaterial()
   const carbon = useCarbonMaterial()
 
   useFrame(({ clock }) => {
@@ -369,14 +341,14 @@ export function CloakedSimulator() {
   return (
     <group ref={groupRef} position={[0, 0, -0.35]} rotation={[0, -0.08, 0]}>
       <CarbonDeck material={carbon} />
-      <Scaffolding steel={steel} carbon={carbon} />
+      <Scaffolding carbon={carbon} />
       <BlackoutVolume />
       <ClothBay />
       <SimBubble />
       <FloorFan reducedMotion={reducedMotion} material={carbon} />
       <ContactShadows
         position={[0, 0.004, 0]}
-        opacity={0.65}
+        opacity={0.55}
         scale={14}
         blur={3.4}
         far={4.5}

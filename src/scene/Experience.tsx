@@ -130,30 +130,28 @@ export function Experience() {
     }
   })
 
-  const envIntensity = mapRange(progress, 0.08, 0.35, 0.02, 0.45)
+  const envIntensity = mapRange(progress, 0.08, 0.35, 0.02, 0.28)
 
   return (
     <>
-      <color attach="background" args={['#000000']} />
-      <fog attach="fog" args={['#05060a', 18, 54]} />
       <SceneLights progress={progress} />
       <Environment resolution={256} environmentIntensity={envIntensity}>
-        <Lightformer intensity={1.2} position={[0, 8, -4]} scale={[20, 0.6, 1]} form="rect" color="#7de8f5" />
-        <Lightformer intensity={0.9} position={[8, 3, 2]} scale={[4, 8, 1]} form="rect" color="#dfefff" />
-        <Lightformer intensity={0.55} position={[-6, 2, -2]} scale={[3, 6, 1]} form="rect" color="#e85d04" />
+        <Lightformer intensity={0.7} position={[0, 8, -4]} scale={[20, 0.6, 1]} form="rect" color="#7de8f5" />
+        <Lightformer intensity={0.45} position={[8, 3, 2]} scale={[4, 8, 1]} form="rect" color="#dfefff" />
+        <Lightformer intensity={0.35} position={[-6, 2, -2]} scale={[3, 6, 1]} form="rect" color="#e85d04" />
       </Environment>
       <Factory />
       <CloakedSimulator />
       <EffectComposer multisampling={4} enableNormalPass={false}>
-        <Bloom intensity={0.42} luminanceThreshold={0.78} luminanceSmoothing={0.45} mipmapBlur />
-        <Noise opacity={0.012} blendFunction={BlendFunction.SOFT_LIGHT} />
+        <Bloom intensity={0.32} luminanceThreshold={0.82} luminanceSmoothing={0.45} mipmapBlur />
+        <Noise opacity={0.01} blendFunction={BlendFunction.SOFT_LIGHT} />
         <ChromaticAberration
           blendFunction={BlendFunction.NORMAL}
-          offset={new THREE.Vector2(0.00012, 0.00012)}
+          offset={new THREE.Vector2(0.0001, 0.0001)}
           radialModulation={false}
           modulationOffset={0}
         />
-        <Vignette offset={0.28} darkness={0.62} />
+        <Vignette offset={0.32} darkness={0.48} />
       </EffectComposer>
     </>
   )
