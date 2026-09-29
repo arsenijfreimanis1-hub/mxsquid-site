@@ -8,37 +8,30 @@ export function VisionPage({ onHome }: VisionPageProps) {
       <div className="page__glow" aria-hidden="true" />
       <div className="page__inner">
         <p className="page__kicker">Vision</p>
-        <h1 className="page__title">Build the first hyper-realistic motocross simulator.</h1>
-        <p className="page__lede">
-          Not a game pad. Not a novelty. A full-body machine that feels like dirt, throttle, and
-          consequence - built for venues, athletes, and anyone who wants the real thing without
-          the track.
-        </p>
+        <h1 className="page__title">The first real motocross simulator.</h1>
+        <p className="page__lede">Not a gamepad. A machine you can feel.</p>
 
         <section className="vision-block">
           <h2 className="vision-block__title">What we’re after</h2>
           <p className="vision-block__body">
-            Hardware that sells the ride: weight transfer, suspension response, lean, impact, and
-            sound pressure. Software that reads like a living track. A product you can put on a
-            floor and charge for by the minute.
+            Weight, lean, the hit. Something you put on a floor and ride.
           </p>
         </section>
 
         <section className="vision-block">
           <h2 className="vision-block__title">Where it stands</h2>
           <p className="vision-block__body">
-            The machine is still under wraps. No manufacturer line. No investors. No finished unit
-            shipping. The cover is the teaser - the intention underneath is the product.
+            Still under the cover. No factory. No investors. Not shipping yet.
           </p>
         </section>
 
         <section className="vision-block">
           <h2 className="vision-block__title">Who we need</h2>
           <ul className="vision-list">
-            <li>Engineers who can turn motion into believable physics</li>
-            <li>Manufacturers who can build durable venue-grade hardware</li>
-            <li>Investors who fund deep product, not slideware</li>
-            <li>Venues ready to host the first units</li>
+            <li>Engineers who can make motion feel real</li>
+            <li>Manufacturers who can build it to last</li>
+            <li>Investors who back the product, not the pitch</li>
+            <li>Venues that want the first one</li>
           </ul>
         </section>
 

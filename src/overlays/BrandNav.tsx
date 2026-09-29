@@ -8,7 +8,7 @@ const SCROLL_LABELS: Record<string, string> = {
   empty: 'Empty floor',
   manufacturers: 'No factory yet',
   investors: 'No capital yet',
-  approach: 'Big reveal',
+  approach: 'Stay tuned',
 }
 
 const SCROLL_LINKS = CHAPTERS.filter((c) => c.id !== 'brand' && c.id !== 'ask').map((chapter, index) => ({
