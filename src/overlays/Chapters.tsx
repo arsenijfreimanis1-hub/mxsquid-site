@@ -1,7 +1,9 @@
+import { useRef } from 'react'
 import { useScrollState } from '../hooks/useScrollContext'
 import type { RoutePath } from '../hooks/useRoute'
 import { CHAPTERS, chapterOpacity } from '../lib/scroll'
 import { StayTunedForm } from './StayTunedForm'
+import { LogoLaunch } from './LogoLaunch'
 
 function ChapterCopy({
   chapter,
@@ -50,6 +52,7 @@ function ChapterActions({ onNavigate }: { onNavigate: (path: RoutePath) => void 
 
 export function Chapters() {
   const { progress, reducedMotion, navigate } = useScrollState()
+  const logoSlotRef = useRef<HTMLDivElement>(null)
 
   if (reducedMotion) {
     return (
@@ -75,6 +78,8 @@ export function Chapters() {
         <div className="progress-rail__fill" style={{ transform: `scaleX(${progress})` }} />
       </div>
 
+      <LogoLaunch progress={progress} slotRef={logoSlotRef} />
+
       <section
         className="chapter chapter--brand"
         style={{
@@ -84,7 +89,7 @@ export function Chapters() {
         }}
         aria-hidden={brandOpacity < 0.5}
       >
-        <img className="hero-logo" src="/mxsquid-logo-clear.png" alt="MXsquid" />
+        <div className="hero-launch-slot" ref={logoSlotRef} aria-hidden="true" />
         <ChapterCopy chapter={CHAPTERS[0]} asHeadline="h1" />
       </section>
 
@@ -95,7 +100,7 @@ export function Chapters() {
         return (
           <section
             key={chapter.id}
-            className={`chapter chapter--${chapter.id}${chapter.id === 'ask' ? ' glass glass--panel' : ''}`}
+            className={`chapter chapter--${chapter.id}`}
             style={{ opacity }}
             aria-hidden={opacity < 0.5}
           >

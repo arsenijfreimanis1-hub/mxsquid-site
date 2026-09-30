@@ -19,7 +19,7 @@ const SCROLL_LINKS = CHAPTERS.filter((c) => c.id !== 'brand' && c.id !== 'ask').
 }))
 
 export function BrandNav() {
-  const { scrollToProgress, path, navigate } = useScrollState()
+  const { scrollToProgress, path, navigate, isMobile } = useScrollState()
   const [open, setOpen] = useState(false)
   const closeTimer = useRef<number | null>(null)
   const rootRef = useRef<HTMLElement>(null)
@@ -41,6 +41,11 @@ export function BrandNav() {
     clearCloseTimer()
     closeTimer.current = window.setTimeout(() => setOpen(false), 140)
   }
+
+  useEffect(() => {
+    document.documentElement.classList.toggle('nav-open', open)
+    return () => document.documentElement.classList.remove('nav-open')
+  }, [open])
 
   useEffect(() => {
     const onKey = (event: KeyboardEvent) => {
@@ -81,9 +86,12 @@ export function BrandNav() {
       ref={rootRef}
       className={`brand-nav glass glass--nav${open ? ' brand-nav--open' : ''}`}
       aria-label="MXsquid"
-      onMouseEnter={openMenu}
-      onMouseLeave={scheduleClose}
-      onFocusCapture={openMenu}
+      onMouseEnter={isMobile ? undefined : openMenu}
+      onMouseLeave={isMobile ? undefined : scheduleClose}
+      onFocusCapture={(event) => {
+        if ((event.target as HTMLElement).closest('.brand-nav__caret')) return
+        openMenu()
+      }}
       onBlurCapture={(event) => {
         if (!rootRef.current?.contains(event.relatedTarget as Node)) scheduleClose()
       }}
@@ -100,7 +108,11 @@ export function BrandNav() {
           aria-haspopup="menu"
           aria-expanded={open}
           aria-controls={menuId}
-          onClick={() => setOpen((value) => !value)}
+          onClick={(event) => {
+            event.stopPropagation()
+            clearCloseTimer()
+            setOpen((value) => !value)
+          }}
         >
           <span aria-hidden="true" />
         </button>
