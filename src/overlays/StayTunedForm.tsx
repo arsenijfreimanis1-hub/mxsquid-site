@@ -31,7 +31,7 @@ export function StayTunedForm() {
         },
         body: JSON.stringify({
           email: trimmed,
-          _subject: 'MXsquid — keep me posted',
+          _subject: 'MXsquid - keep me posted',
           _template: 'table',
           message: 'Someone wants updates on MXsquid progress.',
         }),

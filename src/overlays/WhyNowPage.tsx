@@ -17,7 +17,7 @@ export function WhyNowPage({ onHome, variant = 'why-now' }: WhyNowPageProps) {
           {isAbout ? 'Why I’m building this.' : 'Every other motorsport has a sim. Motocross still doesn’t.'}
         </h1>
         <p className="page__lede">
-          You can train cars, rally, even karts on a real machine. MX still gets a controller — or
+          You can train cars, rally, even karts on a real machine. MX still gets a controller - or
           the dirt.
         </p>
 
@@ -33,7 +33,7 @@ export function WhyNowPage({ onHome, variant = 'why-now' }: WhyNowPageProps) {
         <section className="vision-block glass glass--card">
           <h2 className="vision-block__title">Why that matters</h2>
           <p className="vision-block__body">
-            This sport breaks people. A simulator won’t replace the track — I wouldn’t want it to.
+            This sport breaks people. A simulator won’t replace the track - I wouldn’t want it to.
             But it should give you a place to learn the bike without ending up in hospital.
           </p>
         </section>

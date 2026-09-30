@@ -24,7 +24,7 @@ export const CHAPTERS: Chapter[] = [
     end: 0.18,
     kicker: '',
     headline: 'Still under wraps.',
-    body: 'I’m building a motocross simulator you can actually sit on. Not a game — a machine. It isn’t finished yet.',
+    body: 'I’m building a motocross simulator you can actually sit on. Not a game - a machine. It isn’t finished yet.',
   },
   {
     id: 'empty',
@@ -64,7 +64,7 @@ export const CHAPTERS: Chapter[] = [
     end: 1,
     kicker: 'A note from AJ',
     headline: 'I can’t do this alone.',
-    body: 'If you know how to build machines, fund them, or put one on a floor — write to me.',
+    body: 'If you know how to build machines, fund them, or put one on a floor - write to me.',
     quote: 'Make it happen.',
     attribution: 'AJ',
   },

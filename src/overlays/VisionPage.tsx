@@ -10,7 +10,7 @@ export function VisionPage({ onHome }: VisionPageProps) {
         <p className="page__kicker">The idea</p>
         <h1 className="page__title">A bike you can ride without the dirt.</h1>
         <p className="page__lede">
-          I want a machine that leans, hits, and feels like motocross — not a screen and a
+          I want a machine that leans, hits, and feels like motocross - not a screen and a
           controller.
         </p>
 

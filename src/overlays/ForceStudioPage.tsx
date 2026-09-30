@@ -12,7 +12,7 @@ const STEPS = [
   },
   {
     title: 'Double-click it',
-    body: 'Windows might warn you. That’s normal — click More info, then Run anyway.',
+    body: 'Windows might warn you. That’s normal - click More info, then Run anyway.',
   },
   {
     title: 'Leave the window open',
@@ -95,7 +95,7 @@ export function ForceStudioPage({ onHome }: ForceStudioPageProps) {
         </div>
         <h1 className="page__title">The deck follows the bike.</h1>
         <p className="page__lede">
-          Leans, wheelies, jumps — Force Studio makes the motion platform move with MX Bikes.
+          Leans, wheelies, jumps - Force Studio makes the motion platform move with MX Bikes.
           Install it on the same Windows PC as the game.
         </p>
 
@@ -136,7 +136,7 @@ export function ForceStudioPage({ onHome }: ForceStudioPageProps) {
             rel="noreferrer noopener"
           >
             Last touched <time dateTime={updated.iso}>{updated.label}</time>
-            {updated.summary ? <span> — {updated.summary}</span> : null}
+            {updated.summary ? <span> - {updated.summary}</span> : null}
           </a>
         ) : null}
 
