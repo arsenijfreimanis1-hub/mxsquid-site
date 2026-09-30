@@ -1,7 +1,7 @@
 {
   "name": "MXsquid",
   "short_name": "MXsquid",
-  "description": "The first hyper-realistic motocross simulator - still under wraps.",
+  "description": "A motocross simulator you can sit on. Still under wraps.",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#05060a",

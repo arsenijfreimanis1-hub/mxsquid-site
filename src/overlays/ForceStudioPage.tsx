@@ -8,23 +8,23 @@ type ForceStudioPageProps = {
 const STEPS = [
   {
     title: 'Unzip it',
-    body: 'On the PC that runs MX Bikes. You’ll see MX Force Studio.bat.',
+    body: 'Drop the folder on the PC that runs MX Bikes. You’ll see MX Force Studio.bat in there.',
   },
   {
     title: 'Double-click it',
-    body: 'If Windows warns you, hit More info, then Run anyway.',
+    body: 'Windows might warn you. That’s normal — click More info, then Run anyway.',
   },
   {
     title: 'Leave the window open',
-    body: 'First run sets itself up and puts a shortcut on the Desktop.',
+    body: 'The first run sets itself up and puts a shortcut on your Desktop.',
   },
   {
     title: 'Start MX Bikes',
-    body: 'Same PC. If the game was already open, restart it.',
+    body: 'Same computer. If the game was already open, restart it so it picks this up.',
   },
   {
     title: 'Connect',
-    body: 'A tab opens. Click Connect once you’re on track.',
+    body: 'A tab opens. Once you’re actually on the track, click Connect.',
   },
 ] as const
 
@@ -56,10 +56,7 @@ function useRepoUpdate(): RepoUpdate | null {
       .then((response) => (response.ok ? response.json() : Promise.reject(new Error('GitHub'))))
       .then((commits: GithubCommit[]) => {
         if (cancelled || !Array.isArray(commits) || commits.length === 0) return
-        const stamped = commits.find((commit) =>
-          /^Stamp the Windows launcher\b/i.test(commit.commit.message),
-        )
-        const pick = stamped ?? commits[0]
+        const pick = commits[0]
         const iso = pick.commit.committer?.date ?? pick.commit.author?.date
         if (!iso) return
         const subject = pick.commit.message.split('\n')[0]?.trim() ?? ''
@@ -96,35 +93,38 @@ export function ForceStudioPage({ onHome }: ForceStudioPageProps) {
           <img className="studio-brand__icon" src="/force-studio-icon.png" alt="" />
           <img className="studio-brand__mx" src="/mx-bikes-logo.png" alt="MX Bikes" />
         </div>
-        <h1 className="page__title">It moves with the bike.</h1>
+        <h1 className="page__title">The deck follows the bike.</h1>
         <p className="page__lede">
-          Leans, wheelies, jumps. Same PC as MX Bikes.
+          Leans, wheelies, jumps — Force Studio makes the motion platform move with MX Bikes.
+          Install it on the same Windows PC as the game.
         </p>
 
         <div className="studio-actions">
           <a
-            className="studio-card"
+            className="studio-card glass glass--card"
             href={SITE.forceStudio.repo}
             target="_blank"
             rel="noreferrer noopener"
           >
             <p className="studio-card__kicker">Source</p>
-            <h2 className="studio-card__title">View the GitHub repo</h2>
-            <p className="studio-card__body">The plugin, the launcher, the code.</p>
-            <span className="studio-card__cta">Open on GitHub</span>
+            <h2 className="studio-card__title">See the code</h2>
+            <p className="studio-card__body">
+              The plugin, the launcher, everything. Open it on GitHub if you want to look around.
+            </p>
+            <span className="studio-card__cta">Open GitHub</span>
           </a>
 
           <a
-            className="studio-card studio-card--download"
+            className="studio-card studio-card--download glass glass--card"
             href={SITE.forceStudio.zip}
             download={SITE.forceStudio.zipName}
           >
             <p className="studio-card__kicker">Windows + MX Bikes</p>
-            <h2 className="studio-card__title">Download for this PC</h2>
+            <h2 className="studio-card__title">Download it for this PC</h2>
             <p className="studio-card__body">
-              Unzip it next to MX Bikes. Double-click the bat file.
+              Unzip it on the computer that runs MX Bikes, then double-click the .bat file.
             </p>
-            <span className="studio-card__cta">Download mx-force-studio.zip</span>
+            <span className="studio-card__cta">Download the zip</span>
           </a>
         </div>
 
@@ -135,13 +135,13 @@ export function ForceStudioPage({ onHome }: ForceStudioPageProps) {
             target="_blank"
             rel="noreferrer noopener"
           >
-            Last updated <time dateTime={updated.iso}>{updated.label}</time>
-            {updated.summary ? <span>— {updated.summary}</span> : null}
+            Last touched <time dateTime={updated.iso}>{updated.label}</time>
+            {updated.summary ? <span> — {updated.summary}</span> : null}
           </a>
         ) : null}
 
-        <section className="vision-block">
-          <h2 className="vision-block__title">Install on the MX Bikes PC</h2>
+        <section className="vision-block glass glass--card">
+          <h2 className="vision-block__title">Install it on the MX Bikes PC</h2>
           <ol className="studio-steps">
             {STEPS.map((step, index) => (
               <li key={step.title} className="studio-steps__item">
@@ -157,19 +157,20 @@ export function ForceStudioPage({ onHome }: ForceStudioPageProps) {
           </ol>
         </section>
 
-        <section className="vision-block">
+        <section className="vision-block glass glass--card">
           <h2 className="vision-block__title">What you get</h2>
           <p className="vision-block__body">
-            On track, the deck follows the bike. Close the black window when you’re done. Next
-            time, use the Desktop icon.
+            Once you’re on track, the deck follows the bike. When you’re done, close the black
+            window. Next time, just use the Desktop icon.
           </p>
         </section>
 
-        <section className="vision-block">
+        <section className="vision-block glass glass--card">
           <h2 className="vision-block__title">If Connect does nothing</h2>
+          <p className="vision-block__body vision-block__body--lead">Let’s check the usual stuff:</p>
           <ul className="vision-list">
-            <li>Force Studio and MX Bikes must be on the same Windows PC</li>
-            <li>Click Connect only after you are on track</li>
+            <li>Force Studio and MX Bikes have to be on the same Windows PC</li>
+            <li>Click Connect only after you’re on the track</li>
             <li>Restart MX Bikes after the first Force Studio launch</li>
             <li>Keep the black window open while you ride</li>
           </ul>
@@ -177,7 +178,7 @@ export function ForceStudioPage({ onHome }: ForceStudioPageProps) {
 
         <div className="page__actions">
           <button type="button" className="page__btn" onClick={onHome}>
-            Back to home
+            Back home
           </button>
           <a
             className="page__btn"

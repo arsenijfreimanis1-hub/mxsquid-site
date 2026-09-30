@@ -5,10 +5,10 @@ import { CHAPTERS, CHAPTER_SNAPS } from '../lib/scroll'
 const ASK_PROGRESS = CHAPTER_SNAPS[CHAPTER_SNAPS.length - 1]
 
 const SCROLL_LABELS: Record<string, string> = {
-  empty: 'Empty floor',
-  manufacturers: 'No factory yet',
-  investors: 'No capital yet',
-  approach: 'Stay tuned',
+  empty: 'The empty floor',
+  manufacturers: 'No factory',
+  investors: 'No round yet',
+  approach: 'Cover stays on',
 }
 
 const SCROLL_LINKS = CHAPTERS.filter((c) => c.id !== 'brand' && c.id !== 'ask').map((chapter, index) => ({
@@ -79,7 +79,7 @@ export function BrandNav() {
   return (
     <nav
       ref={rootRef}
-      className={`brand-nav${open ? ' brand-nav--open' : ''}`}
+      className={`brand-nav glass glass--nav${open ? ' brand-nav--open' : ''}`}
       aria-label="MXsquid"
       onMouseEnter={openMenu}
       onMouseLeave={scheduleClose}
@@ -106,8 +106,8 @@ export function BrandNav() {
         </button>
       </div>
 
-      <div id={menuId} className="brand-nav__menu" role="menu" aria-hidden={!open}>
-        <p className="brand-nav__label">Navigate</p>
+      <div id={menuId} className="brand-nav__menu glass glass--menu" role="menu" aria-hidden={!open}>
+        <p className="brand-nav__label">Around here</p>
         <button
           type="button"
           role="menuitem"
@@ -127,7 +127,7 @@ export function BrandNav() {
             navigate('/vision')
           }}
         >
-          Vision
+          The vision
         </button>
         <button
           type="button"
@@ -151,7 +151,7 @@ export function BrandNav() {
             navigate('/about')
           }}
         >
-          About
+          About AJ
         </button>
         <button
           type="button"
@@ -169,7 +169,7 @@ export function BrandNav() {
         {path === '/' && (
           <>
             <div className="brand-nav__divider" />
-            <p className="brand-nav__label">Story</p>
+            <p className="brand-nav__label">On this page</p>
             {SCROLL_LINKS.map((item) => (
               <button
                 key={item.id}
@@ -196,7 +196,7 @@ export function BrandNav() {
           tabIndex={open ? 0 : -1}
           onClick={goContact}
         >
-          Contact
+          Say hello
         </button>
       </div>
     </nav>

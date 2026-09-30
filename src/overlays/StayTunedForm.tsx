@@ -15,7 +15,7 @@ export function StayTunedForm() {
     const trimmed = email.trim()
     if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(trimmed)) {
       setStatus('error')
-      setMessage('Enter a valid email.')
+      setMessage('That doesn’t look like an email.')
       return
     }
 
@@ -31,7 +31,7 @@ export function StayTunedForm() {
         },
         body: JSON.stringify({
           email: trimmed,
-          _subject: 'MXsquid - stay tuned signup',
+          _subject: 'MXsquid — keep me posted',
           _template: 'table',
           message: 'Someone wants updates on MXsquid progress.',
         }),
@@ -39,11 +39,11 @@ export function StayTunedForm() {
 
       if (!response.ok) throw new Error('Request failed')
       setStatus('done')
-      setMessage('You’re on the list.')
+      setMessage('You’re on the list. I’ll write when there’s something worth saying.')
       setEmail('')
     } catch {
       setStatus('error')
-      setMessage(`Could not send. Email ${SITE.email} instead.`)
+      setMessage(`Couldn’t send it from here. Email ${SITE.email} and I’ll add you.`)
     }
   }
 
@@ -58,13 +58,16 @@ export function StayTunedForm() {
         className="chapter__cta chapter__cta--button"
         onClick={() => setOpen(true)}
       >
-        Stay tuned
+        Keep me posted
       </button>
     )
   }
 
   return (
     <form className="stay-tuned" onSubmit={onSubmit} noValidate>
+      <label className="stay-tuned__label" htmlFor="stay-tuned-email">
+        Drop your email. I’ll write when the cover comes off.
+      </label>
       <div className="stay-tuned__row">
         <input
           id="stay-tuned-email"
@@ -72,7 +75,7 @@ export function StayTunedForm() {
           type="email"
           name="email"
           autoComplete="email"
-          placeholder="you@email.com"
+          placeholder="your email"
           value={email}
           autoFocus
           onChange={(event) => {
@@ -83,7 +86,7 @@ export function StayTunedForm() {
           required
         />
         <button className="stay-tuned__submit" type="submit" disabled={status === 'loading'}>
-          {status === 'loading' ? 'Sending…' : 'Notify me'}
+          {status === 'loading' ? 'Sending…' : 'Send it'}
         </button>
       </div>
       {message ? (

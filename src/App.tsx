@@ -47,6 +47,7 @@ export default function App() {
   return (
     <ScrollContext.Provider value={scrollValue}>
       <div className={`app${onHome ? '' : ' app--page'}`}>
+        <div className="grain" aria-hidden="true" />
         <div className={`lava-shell${onHome ? '' : ' lava-shell--dim'}`} aria-hidden="true">
           <LavaLamp reducedMotion={reducedMotion} />
         </div>

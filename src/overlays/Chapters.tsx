@@ -1,6 +1,52 @@
 import { useScrollState } from '../hooks/useScrollContext'
+import type { RoutePath } from '../hooks/useRoute'
 import { CHAPTERS, chapterOpacity } from '../lib/scroll'
 import { StayTunedForm } from './StayTunedForm'
+
+function ChapterCopy({
+  chapter,
+  asHeadline,
+}: {
+  chapter: (typeof CHAPTERS)[number]
+  asHeadline: 'h1' | 'h2'
+}) {
+  const Headline = asHeadline
+  return (
+    <>
+      {chapter.kicker ? <p className="chapter__kicker">{chapter.kicker}</p> : null}
+      <Headline className={asHeadline === 'h2' ? 'static-copy__headline' : 'chapter__headline'}>
+        {chapter.headline}
+      </Headline>
+      <p className="chapter__body">{chapter.body}</p>
+      {chapter.quote ? (
+        <blockquote className="chapter__quote">
+          <p>“{chapter.quote}”</p>
+          {chapter.attribution ? <cite className="chapter__attr">{chapter.attribution}</cite> : null}
+        </blockquote>
+      ) : null}
+    </>
+  )
+}
+
+function ChapterActions({ onNavigate }: { onNavigate: (path: RoutePath) => void }) {
+  return (
+    <div className="chapter__actions">
+      <StayTunedForm />
+      <button type="button" className="chapter__cta chapter__cta--button" onClick={() => onNavigate('/why-now')}>
+        Why now
+      </button>
+      <button type="button" className="chapter__cta chapter__cta--button" onClick={() => onNavigate('/vision')}>
+        The vision
+      </button>
+      <button type="button" className="chapter__cta chapter__cta--button" onClick={() => onNavigate('/force-studio')}>
+        Force Studio
+      </button>
+      <a className="chapter__cta" href="mailto:hello@mxsquid.co">
+        Write to me
+      </a>
+    </div>
+  )
+}
 
 export function Chapters() {
   const { progress, reducedMotion, navigate } = useScrollState()
@@ -12,26 +58,10 @@ export function Chapters() {
           <img className="hero-logo hero-logo--static" src="/mxsquid-logo-clear.png" alt="MXsquid" />
           {CHAPTERS.map((chapter) => (
             <section key={chapter.id} className="static-copy__block">
-              {chapter.kicker ? <p className="chapter__kicker">{chapter.kicker}</p> : null}
-              <h2 className="static-copy__headline">{chapter.headline}</h2>
-              <p className={chapter.id === 'ask' ? 'chapter__quote' : 'chapter__body'}>{chapter.body}</p>
+              <ChapterCopy chapter={chapter} asHeadline="h2" />
             </section>
           ))}
-          <div className="chapter__actions">
-            <StayTunedForm />
-            <button type="button" className="chapter__cta chapter__cta--button" onClick={() => navigate('/why-now')}>
-              Why now
-            </button>
-            <button type="button" className="chapter__cta chapter__cta--button" onClick={() => navigate('/vision')}>
-              Read the vision
-            </button>
-            <button type="button" className="chapter__cta chapter__cta--button" onClick={() => navigate('/force-studio')}>
-              Force Studio
-            </button>
-            <a className="chapter__cta" href="mailto:hello@mxsquid.co">
-              hello@mxsquid.co
-            </a>
-          </div>
+          <ChapterActions onNavigate={navigate} />
         </div>
       </div>
     )
@@ -55,8 +85,7 @@ export function Chapters() {
         aria-hidden={brandOpacity < 0.5}
       >
         <img className="hero-logo" src="/mxsquid-logo-clear.png" alt="MXsquid" />
-        <h1 className="chapter__headline">{CHAPTERS[0].headline}</h1>
-        <p className="chapter__body">{CHAPTERS[0].body}</p>
+        <ChapterCopy chapter={CHAPTERS[0]} asHeadline="h1" />
       </section>
 
       {CHAPTERS.filter((chapter) => chapter.id !== 'brand').map((chapter) => {
@@ -66,51 +95,19 @@ export function Chapters() {
         return (
           <section
             key={chapter.id}
-            className={`chapter chapter--${chapter.id}`}
+            className={`chapter chapter--${chapter.id}${chapter.id === 'ask' ? ' glass glass--panel' : ''}`}
             style={{ opacity }}
             aria-hidden={opacity < 0.5}
           >
-            {chapter.kicker ? <p className="chapter__kicker">{chapter.kicker}</p> : null}
-            <h1 className="chapter__headline">{chapter.headline}</h1>
-            <p className={chapter.id === 'ask' ? 'chapter__quote' : 'chapter__body'}>{chapter.body}</p>
-            {chapter.id === 'ask' && (
-              <>
-                <div className="chapter__actions">
-                  <StayTunedForm />
-                  <button
-                    type="button"
-                    className="chapter__cta chapter__cta--button"
-                    onClick={() => navigate('/why-now')}
-                  >
-                    Why now
-                  </button>
-                  <button
-                    type="button"
-                    className="chapter__cta chapter__cta--button"
-                    onClick={() => navigate('/vision')}
-                  >
-                    Read the vision
-                  </button>
-                  <button
-                    type="button"
-                    className="chapter__cta chapter__cta--button"
-                    onClick={() => navigate('/force-studio')}
-                  >
-                    Force Studio
-                  </button>
-                  <a className="chapter__cta" href="mailto:hello@mxsquid.co">
-                    hello@mxsquid.co
-                  </a>
-                </div>
-              </>
-            )}
+            <ChapterCopy chapter={chapter} asHeadline="h1" />
+            {chapter.id === 'ask' ? <ChapterActions onNavigate={navigate} /> : null}
           </section>
         )
       })}
 
       <div className="scroll-hint" style={{ opacity: progress < 0.06 ? 1 : 0 }} aria-hidden="true">
         <span className="scroll-hint__line" />
-        Scroll
+        Keep going
       </div>
     </div>
   )

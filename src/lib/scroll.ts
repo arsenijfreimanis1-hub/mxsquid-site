@@ -13,6 +13,8 @@ export type Chapter = {
   kicker: string
   headline: string
   body: string
+  quote?: string
+  attribution?: string
 }
 
 export const CHAPTERS: Chapter[] = [
@@ -21,60 +23,62 @@ export const CHAPTERS: Chapter[] = [
     start: 0,
     end: 0.18,
     kicker: '',
-    headline: 'Under wraps.',
-    body: 'A real motocross simulator. Still being built.',
+    headline: 'Still under wraps.',
+    body: 'I’m building a motocross simulator you can actually sit on. Not a game — a machine. It isn’t finished yet.',
   },
   {
     id: 'empty',
     start: 0.18,
     end: 0.34,
     kicker: '',
-    headline: 'Empty floor.',
-    body: 'Nothing here yet. Just room to build.',
+    headline: 'Empty on purpose.',
+    body: 'There’s nothing on this floor yet. That’s the point. Room for the first one.',
   },
   {
     id: 'manufacturers',
     start: 0.34,
     end: 0.5,
     kicker: '',
-    headline: 'No factory yet.',
-    body: 'When someone builds this with me, the floor is theirs.',
+    headline: 'I don’t have a factory.',
+    body: 'If you build hardware for a living, this space is yours. I just need someone who can make it real.',
   },
   {
     id: 'investors',
     start: 0.5,
     end: 0.66,
     kicker: '',
-    headline: 'No capital yet.',
-    body: 'The idea first. The round after.',
+    headline: 'I haven’t raised a round.',
+    body: 'I wanted the machine to exist before the pitch. If that sounds like you, we should talk.',
   },
   {
     id: 'approach',
     start: 0.66,
     end: 0.82,
     kicker: '',
-    headline: 'Stay tuned.',
-    body: 'The cover stays on until it’s ready.',
+    headline: 'Cover stays on.',
+    body: 'You’ll see it when you can ride it. Until then, I’m still in the shop.',
   },
   {
     id: 'ask',
     start: 0.82,
     end: 1,
-    kicker: '',
-    headline: 'Help',
-    body: '"Make it Happen" - AJ',
+    kicker: 'A note from AJ',
+    headline: 'I can’t do this alone.',
+    body: 'If you know how to build machines, fund them, or put one on a floor — write to me.',
+    quote: 'Make it happen.',
+    attribution: 'AJ',
   },
 ]
 
 /** Discrete scroll stops - one per story beat. */
 /** Short facts shown above the covered machine, one per scroll stop. */
 export const SIM_FACTS: Record<ChapterId, string> = {
-  brand: 'A real motocross simulator. Not a game.',
-  empty: 'The first one still has to be built.',
-  manufacturers: 'It has to lean like a bike, not a pad.',
-  investors: 'You feel the weight, the throttle, and the hit.',
-  approach: 'The cover comes off when you can ride it.',
-  ask: 'AJ raced motocross for five years.',
+  brand: 'This isn’t a game. It’s a machine you sit on.',
+  empty: 'The first one isn’t built yet. That’s why the floor is empty.',
+  manufacturers: 'It has to lean like a bike. A pad doesn’t count.',
+  investors: 'You feel the weight, the throttle, the hit. All of it.',
+  approach: 'Cover comes off the day you can ride it.',
+  ask: 'I raced motocross for five years. That’s why this exists.',
 }
 
 export const CHAPTER_SNAPS: number[] = CHAPTERS.map((chapter, index) => {
