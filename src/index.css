@@ -75,11 +75,13 @@ body {
 
 .glass {
   position: relative;
-  background: transparent;
+  isolation: isolate;
+  background: rgba(255, 255, 255, 0.08);
   border: 1px solid var(--glass-border);
   box-shadow: var(--glass-shadow);
   backdrop-filter: blur(22px) saturate(1.45);
   -webkit-backdrop-filter: blur(22px) saturate(1.45);
+  transform: translateZ(0);
 }
 
 .glass::before {
@@ -109,7 +111,7 @@ body {
 
 .brand-nav__menu.glass--menu {
   border-radius: 1.15rem;
-  background: rgba(255, 255, 255, 0.035);
+  background: rgba(255, 255, 255, 0.08);
   backdrop-filter: blur(22px) saturate(1.5);
   -webkit-backdrop-filter: blur(22px) saturate(1.5);
 }
@@ -1107,7 +1109,7 @@ body:has(.app--page) {
   pointer-events: none;
   position: relative;
   animation: bubbleIn 0.45s var(--ease);
-  background: transparent;
+  background: rgba(255, 255, 255, 0.08);
   border: 1px solid var(--glass-border);
   box-shadow: var(--glass-shadow);
   backdrop-filter: blur(18px) saturate(1.35);
@@ -1281,6 +1283,16 @@ body:has(.app--page) {
     backdrop-filter: none;
     -webkit-backdrop-filter: none;
     background: rgba(8, 10, 14, 0.82);
+  }
+}
+
+@supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+  .glass,
+  .sim-bubble,
+  .stay-tuned__input,
+  .chapter__cta,
+  .page__btn {
+    background: rgba(12, 16, 22, 0.78);
   }
 }
 
