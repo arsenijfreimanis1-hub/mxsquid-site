@@ -14,56 +14,55 @@ export function WhyNowPage({ onHome, variant = 'why-now' }: WhyNowPageProps) {
       <div className="page__inner">
         <p className="page__kicker">{isAbout ? 'About' : 'Why now'}</p>
         <h1 className="page__title">
-          {isAbout ? 'Why I’m building this.' : 'Every motorsport has a sim. Motocross doesn’t.'}
+          {isAbout ? 'Why I’m building this.' : 'Every other motorsport has a sim. Motocross still doesn’t.'}
         </h1>
         <p className="page__lede">
-          Cars, rally, karts — you can train on a real machine. MX still gets a controller.
+          You can train cars, rally, even karts on a real machine. MX still gets a controller - or
+          the dirt.
         </p>
 
-        <section className="vision-block">
+        <section className="vision-block glass glass--card">
           <h2 className="vision-block__title">The gap</h2>
           <p className="vision-block__body">
-            You can book a car sim. For motocross, you play a game or you risk the dirt.
+            If you want to practice cars, you book a sim. If you want to practice motocross, you
+            either play a video game or you risk the track. There’s nothing in between, and I think
+            that’s a problem.
           </p>
         </section>
 
-        <section className="vision-block">
-          <h2 className="vision-block__title">Why it matters</h2>
+        <section className="vision-block glass glass--card">
+          <h2 className="vision-block__title">Why that matters</h2>
           <p className="vision-block__body">
-            The sport breaks people. A sim won’t replace the track. It gives you a place to learn
-            without the hospital.
+            This sport breaks people. A simulator won’t replace the track - I wouldn’t want it to.
+            But it should give you a place to learn the bike without ending up in hospital.
           </p>
         </section>
 
-        <section className="vision-block">
-          <h2 className="vision-block__title">My story</h2>
+        <section className="vision-block glass glass--card">
+          <h2 className="vision-block__title">How I got here</h2>
           <p className="vision-block__body">
-            I raced for five years. I wanted a real machine. So I’m building one.
+            I raced motocross for five years. I kept looking for a machine that felt like the real
+            thing. Nobody had built one, so I started.
           </p>
         </section>
 
-        <section className="vision-block">
-          <h2 className="vision-block__title">What I’m doing</h2>
+        <section className="vision-block glass glass--card">
+          <h2 className="vision-block__title">What I’m doing now</h2>
           <p className="vision-block__body">
-            Hardware, motion, and people who can build it and put it somewhere. The cover stays on
-            until they’re in the room.
+            Hardware, motion, and finding the people who can build it and put it somewhere you can
+            ride. The cover stays on until those people are in the room.
           </p>
         </section>
 
         <div className="page__actions">
           <button type="button" className="page__btn" onClick={onHome}>
-            Back to home
+            Back home
           </button>
-          <a
-            className="page__btn"
-            href={SITE.linkedIn}
-            target="_blank"
-            rel="noreferrer noopener"
-          >
-            LinkedIn - {SITE.founderName}
+          <a className="page__btn" href={SITE.linkedIn} target="_blank" rel="noreferrer noopener">
+            That’s me on LinkedIn
           </a>
           <a className="page__btn page__btn--accent" href={`mailto:${SITE.email}`}>
-            {SITE.email}
+            Write to me
           </a>
         </div>
       </div>

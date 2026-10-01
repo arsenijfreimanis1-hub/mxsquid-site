@@ -6,20 +6,48 @@ function scrollMax() {
   return document.documentElement.scrollHeight - window.innerHeight
 }
 
-const SNAP_DURATION = 1.35
-const SNAP_LOCK_MS = 1280
+const SNAP_DURATION = 0.72
+const SNAP_LOCK_MS = 420
 
-function easeInOutCubic(t: number) {
-  return t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2
+function easeOutCubic(t: number) {
+  return 1 - Math.pow(1 - t, 3)
 }
 
-export function useLenisScroll(reducedMotion: boolean, enabled = true) {
+export function useIsMobile() {
+  const [mobile, setMobile] = useState(() =>
+    typeof window !== 'undefined' &&
+    (window.innerWidth < 768 || window.matchMedia('(pointer: coarse)').matches),
+  )
+
+  useEffect(() => {
+    const media = window.matchMedia('(max-width: 768px), (pointer: coarse)')
+    const update = () => setMobile(media.matches || window.innerWidth < 768)
+    update()
+    media.addEventListener('change', update)
+    window.addEventListener('resize', update)
+    return () => {
+      media.removeEventListener('change', update)
+      window.removeEventListener('resize', update)
+    }
+  }, [])
+
+  return mobile
+}
+
+export function useLenisScroll(reducedMotion: boolean, enabled = true, isMobile = false) {
   const [progress, setProgress] = useState(0)
   const lenisRef = useRef<Lenis | null>(null)
   const indexRef = useRef(0)
   const lockingRef = useRef(false)
-  const touchYRef = useRef<number | null>(null)
   const progressRef = useRef(0)
+
+  const publish = (value: number) => {
+    const next = Math.min(1, Math.max(0, value))
+    if (Math.abs(next - progressRef.current) < 0.0004) return
+    progressRef.current = next
+    setProgress(next)
+    indexRef.current = nearestSnapIndex(next)
+  }
 
   const scrollToProgress = useCallback(
     (t: number) => {
@@ -37,14 +65,14 @@ export function useLenisScroll(reducedMotion: boolean, enabled = true) {
 
       lockingRef.current = true
       lenisRef.current.scrollTo(y, {
-        duration: SNAP_DURATION,
-        easing: easeInOutCubic,
+        duration: isMobile ? 0.62 : SNAP_DURATION,
+        easing: easeOutCubic,
       })
       window.setTimeout(() => {
         lockingRef.current = false
-      }, SNAP_LOCK_MS)
+      }, isMobile ? 380 : SNAP_LOCK_MS)
     },
-    [reducedMotion, enabled],
+    [reducedMotion, enabled, isMobile],
   )
 
   const stepSnap = useCallback(
@@ -71,10 +99,7 @@ export function useLenisScroll(reducedMotion: boolean, enabled = true) {
       lenisRef.current = null
       const onScroll = () => {
         const max = scrollMax()
-        const value = max > 0 ? window.scrollY / max : 0
-        progressRef.current = value
-        setProgress(value)
-        indexRef.current = nearestSnapIndex(value)
+        publish(max > 0 ? window.scrollY / max : 0)
       }
       onScroll()
       window.addEventListener('scroll', onScroll, { passive: true })
@@ -82,28 +107,19 @@ export function useLenisScroll(reducedMotion: boolean, enabled = true) {
     }
 
     const lenis = new Lenis({
-      duration: SNAP_DURATION,
-      easing: easeInOutCubic,
-      smoothWheel: false,
-      syncTouch: false,
-      touchMultiplier: 0,
-      wheelMultiplier: 0,
+      duration: isMobile ? 0.72 : 0.58,
+      easing: easeOutCubic,
+      smoothWheel: true,
+      syncTouch: true,
+      touchMultiplier: isMobile ? 1.12 : 1,
+      wheelMultiplier: isMobile ? 0.88 : 0.82,
     })
     lenisRef.current = lenis
 
-    let target = 0
-    let current = 0
-
     lenis.on('scroll', () => {
       const max = scrollMax()
-      target = max > 0 ? lenis.scroll / max : 0
+      publish(max > 0 ? lenis.scroll / max : 0)
     })
-
-    const onWheel = (event: WheelEvent) => {
-      event.preventDefault()
-      if (Math.abs(event.deltaY) < 6) return
-      stepSnap(event.deltaY > 0 ? 1 : -1)
-    }
 
     const onKey = (event: KeyboardEvent) => {
       if (event.key === 'ArrowDown' || event.key === 'PageDown' || event.key === ' ') {
@@ -121,49 +137,22 @@ export function useLenisScroll(reducedMotion: boolean, enabled = true) {
       }
     }
 
-    const onTouchStart = (event: TouchEvent) => {
-      touchYRef.current = event.touches[0]?.clientY ?? null
-    }
-
-    const onTouchEnd = (event: TouchEvent) => {
-      if (touchYRef.current === null) return
-      const endY = event.changedTouches[0]?.clientY
-      if (endY === undefined) return
-      const delta = touchYRef.current - endY
-      touchYRef.current = null
-      if (Math.abs(delta) < 42) return
-      stepSnap(delta > 0 ? 1 : -1)
-    }
-
-    window.addEventListener('wheel', onWheel, { passive: false })
     window.addEventListener('keydown', onKey)
-    window.addEventListener('touchstart', onTouchStart, { passive: true })
-    window.addEventListener('touchend', onTouchEnd, { passive: true })
 
     let frame = 0
-    let last = performance.now()
     const raf = (time: number) => {
-      const delta = Math.min(0.05, (time - last) / 1000)
-      last = time
       lenis.raf(time)
-      const follow = 1 - Math.exp(-delta * 7)
-      current += (target - current) * follow
-      progressRef.current = current
-      setProgress(current)
       frame = requestAnimationFrame(raf)
     }
     frame = requestAnimationFrame(raf)
 
     return () => {
       cancelAnimationFrame(frame)
-      window.removeEventListener('wheel', onWheel)
       window.removeEventListener('keydown', onKey)
-      window.removeEventListener('touchstart', onTouchStart)
-      window.removeEventListener('touchend', onTouchEnd)
       lenis.destroy()
       lenisRef.current = null
     }
-  }, [reducedMotion, enabled, stepSnap, scrollToProgress])
+  }, [reducedMotion, enabled, isMobile, stepSnap, scrollToProgress])
 
   return { progress, scrollToProgress }
 }

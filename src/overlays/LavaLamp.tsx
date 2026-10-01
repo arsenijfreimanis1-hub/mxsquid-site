@@ -22,7 +22,7 @@ function makeBlobs(width: number, height: number): Blob[] {
     vx: (Math.random() - 0.5) * 0.18,
     vy: -0.12 - Math.random() * 0.22,
     r: 70 + Math.random() * 110,
-    hue: i % 3 === 0 ? 18 : i % 3 === 1 ? 186 : 210,
+    hue: [24, 355, 210, 145][i % 4],
   }))
 }
 

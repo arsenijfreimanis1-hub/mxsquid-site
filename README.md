@@ -1,6 +1,6 @@
 # MXsquid
 
-Cinematic scroll landing for MXsquid — a passion project building the first hyper-realistic motocross simulator.
+Cinematic scroll landing for MXsquid - a passion project building the first hyper-realistic motocross simulator.
 
 ## Run locally
 
@@ -13,7 +13,7 @@ Open the URL Vite prints (usually `http://localhost:5173`).
 
 ## Story
 
-Scroll through an empty factory: no manufacturers, no investors — then approach the machine under a black cloak. The cloth stirs but never fully comes off. The site ends with a call for engineers, manufacturers, investors, and venues to help develop it.
+Scroll through an empty factory: no manufacturers, no investors - then approach the machine under a black cloak. The cloth stirs but never fully comes off. The site ends with a call for engineers, manufacturers, investors, and venues to help develop it.
 
 ## Stack
 

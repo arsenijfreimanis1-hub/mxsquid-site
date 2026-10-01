@@ -283,7 +283,7 @@ function FloorFan({ reducedMotion, material }: { reducedMotion: boolean; materia
           <cylinderGeometry args={[0.05, 0.05, 0.04, 16]} />
         </mesh>
       </group>
-      <pointLight position={[-0.4, 1.1, 0.6]} intensity={0.2} distance={3.5} color="#8ad4e0" />
+      <pointLight position={[-0.4, 1.1, 0.6]} intensity={0.2} distance={3.5} color="#ff5a00" />
     </group>
   )
 }
@@ -297,13 +297,20 @@ function CarbonDeck({ material }: { material: THREE.Material }) {
 }
 
 function SimBubble() {
-  const { progress } = useScrollState()
-  if (progress < 0.16) return null
+  const { progress, isMobile } = useScrollState()
+  if (isMobile || progress < 0.16) return null
   const chapter = getChapter(progress)
   const opacity = chapterOpacity(progress, chapter)
 
   return (
-    <Html position={[0, BAY.h + 0.95, 0]} center distanceFactor={7} zIndexRange={[4, 0]} style={{ pointerEvents: 'none' }}>
+    <Html
+      position={[0, BAY.h + 0.95, 0]}
+      center
+      distanceFactor={7}
+      zIndexRange={[4, 0]}
+      wrapperClass="sim-bubble-wrap"
+      style={{ pointerEvents: 'none' }}
+    >
       <div className="sim-bubble" style={{ opacity }} key={chapter.id}>
         <p>{SIM_FACTS[chapter.id]}</p>
       </div>
