@@ -39,7 +39,7 @@ export function BrandNav() {
 
   const scheduleClose = () => {
     clearCloseTimer()
-    closeTimer.current = window.setTimeout(() => setOpen(false), 140)
+    closeTimer.current = window.setTimeout(() => setOpen(false), 280)
   }
 
   useEffect(() => {
@@ -118,7 +118,13 @@ export function BrandNav() {
         </button>
       </div>
 
-      <div id={menuId} className="brand-nav__menu glass glass--menu" role="menu" aria-hidden={!open}>
+      <div
+        id={menuId}
+        className="brand-nav__menu glass glass--menu"
+        role="menu"
+        aria-hidden={!open}
+        onMouseEnter={isMobile ? undefined : openMenu}
+      >
         <p className="brand-nav__label">Around here</p>
         <button
           type="button"
