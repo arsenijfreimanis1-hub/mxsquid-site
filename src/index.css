@@ -290,6 +290,16 @@ body:has(.app--page) {
     visibility 0.4s var(--ease);
 }
 
+/* Hit-area bridge so the cursor can leave the pill and enter the menu without dropping hover */
+.brand-nav__menu::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 100%;
+  height: 0.75rem;
+}
+
 .brand-nav--open .brand-nav__menu,
 .brand-nav:hover .brand-nav__menu,
 .brand-nav:focus-within .brand-nav__menu {
